@@ -33,6 +33,9 @@ The first release: from a prototype you build from source to something you insta
   equals a full-frame paint; CI fails when the committed images are out of date ([ADR-0011](docs/adr/0011-host-renderer.md)).
 - **Documentation.** A README for newcomers, `AGENTS.md` for AI coding agents, `docs/troubleshooting.md`,
   `SECURITY.md`, ADRs 0009 to 0012, third-party notices.
+- **Enclosure v1.2.** No heat-set inserts: four ST2.9 × 9.5 self-tapping screws cut their own thread in Ø2.5 pilot
+  holes in the corner supports (4.9 mm of thread, 1.5 mm of plastic below the hole; the supports are 1 mm taller).
+  The bezel and the fit-test coupon are unchanged; only the body STL is regenerated.
 - **Enclosure v1.1.** Bezel posts make the bezel one solid and clamp the board; the USB-C cut is centred on the
   receptacle and fits overmolds up to about 13 x 8.5 mm; an even 0.4 mm board clearance and a 0.5 mm glass gap;
   required rubber feet at the corners (tip threshold about 9.4 N instead of about 5 N); rounded corner supports with a
