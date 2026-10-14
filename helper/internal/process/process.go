@@ -11,7 +11,8 @@ import (
 // Info describes a running process.
 type Info struct {
 	PID       int
-	Dir       string // working directory, empty if not readable
+	Dir       string   // working directory, empty if not readable
+	Args      []string // command line, program first; empty if not readable
 	StartedAt time.Time
 }
 

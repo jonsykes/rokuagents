@@ -5,6 +5,8 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-14
+
 The first release: from a prototype you build from source to something you install and plug in.
 
 ### Added
@@ -33,6 +35,9 @@ The first release: from a prototype you build from source to something you insta
   equals a full-frame paint; CI fails when the committed images are out of date ([ADR-0011](docs/adr/0011-host-renderer.md)).
 - **Documentation.** A README for newcomers, `AGENTS.md` for AI coding agents, `docs/troubleshooting.md`,
   `SECURITY.md`, ADRs 0009 to 0012, third-party notices.
+- **Enclosure v1.2.** No heat-set inserts: four ST2.9 × 9.5 self-tapping screws cut their own thread in Ø2.5 pilot
+  holes in the corner supports (4.9 mm of thread, 1.5 mm of plastic below the hole; the supports are 1 mm taller).
+  The bezel and the fit-test coupon are unchanged; only the body STL is regenerated.
 - **Enclosure v1.1.** Bezel posts make the bezel one solid and clamp the board; the USB-C cut is centred on the
   receptacle and fits overmolds up to about 13 x 8.5 mm; an even 0.4 mm board clearance and a 0.5 mm glass gap;
   required rubber feet at the corners (tip threshold about 9.4 N instead of about 5 N); rounded corner supports with a
@@ -65,6 +70,10 @@ The first release: from a prototype you build from source to something you insta
 
 - A short write to a serial port with a full output buffer is retried instead of dropping part of a frame.
 - A closed device manager stays closed.
+- **OpenCode 2 is detected again.** OpenCode 2 writes its sessions to `session_v2` and `session_message` and no longer
+  touches the `message` and `part` tables the helper read, so every card stayed idle. The helper now reads the new
+  tables (turn end and outcome, interrupted and failed replies, compaction) and falls back to the old ones for
+  OpenCode 1. Its background service (`opencode serve`) is no longer shown as a session in the home folder.
 - OpenCode: errors left by a previous run are ignored; a reply of a dead run is not "working"; a store error no longer
   hides the sessions.
 - Logos are drawn the same in every strip; auto-advance on boards without touch waits a full interval after a second
@@ -93,5 +102,6 @@ The minimum viable product. It was never tagged or published as a release; its c
 - Documentation: architecture, protocol, hardware notes with bring-up findings, ADRs, roadmap.
 - CI: helper tests on Linux, macOS and Windows; lint; firmware host tests and build; enclosure renders.
 
-[Unreleased]: https://github.com/tonylook/managents/commits/main
+[Unreleased]: https://github.com/tonylook/managents/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/tonylook/managents/commits/main
 [0.1.0]: https://github.com/tonylook/managents/commit/b9edbd2

@@ -4,7 +4,8 @@
 //   body  — a wedge whose front face is inclined 45°; printed standing on its base.
 //   bezel — the frame around the screen; printed face down.
 // The board drops into the face from the front and is clamped between the two
-// with 4 x M3x10 screws into M3 heat-set inserts. USB-C exits on the right side.
+// with 4 self-tapping screws (ST2.9 x 9.5) that cut their own thread in the
+// printed corner supports: no inserts, no nuts. USB-C exits on the right side.
 //
 // Render one part:   openscad -D 'part="body"' -o body.stl managents_case.scad
 // Besides the printed parts: "assembly" (preview), "section" (assembly cut in
@@ -31,15 +32,15 @@ bezel_top = 1.6;    // frame thickness over the glass border
 window_margin = 0.4; // window grows beyond the touch view area by this much
 
 /* [Fasteners] */
-screw_l = 10;           // M3 screw length
-screw_d = 3.4;          // M3 clearance
-screw_head_d = 6.2;     // counterbore for M3 socket or pan head
+screw_l = 9.5;          // length of the self-tapping screws (ST2.9 pan head; ST3.0 x 10 also fits)
+screw_d = 3.4;          // clearance in the bezel
+screw_head_d = 6.2;     // counterbore for a pan head (ST2.9 head is 5.5 mm)
 screw_head_h = 3.2;
 post_wall = 1.2;        // plastic around the screw heads in the bezel's corner posts
-insert_d = 4.0;         // hole for M3 x 5.7 heat-set inserts (use 2.8 for self-tapping)
-insert_h = 6.5;
-insert_wall = 2.5;      // plastic around each insert in the supports under the board corners
-corner_block_h = 7;     // height of those supports
+pilot_d = 2.5;          // pilot hole the screws cut their thread in (about 85 % of the 2.9 mm thread)
+pilot_h = 6.5;          // pilot depth: the screw's thread plus 1.5 mm for its tip
+boss_wall = 2.5;        // plastic around each pilot hole in the supports under the board corners
+corner_block_h = 8;     // height of those supports: 1.5 mm of plastic stays below the pilot hole
 
 /* [Cable] */
 usb_cutout = [14, 10];  // side opening for the USB-C plug (along the face, along its normal)
@@ -63,7 +64,7 @@ bezel_h = board_front_t + glass_gap + bezel_top;
 board_origin = [rim + fit, rim + fit];   // board's lower-left corner on the face
 post_d = screw_head_d + 2 * post_wall;
 usb_axis_n = -board_pcb_t - board_usb_size[1] / 2; // receptacle axis, in the face frame
-screw_engagement = screw_l - (bezel_h - screw_head_h) - board_pcb_t; // thread inside the insert
+screw_engagement = screw_l - (bezel_h - screw_head_h) - board_pcb_t; // thread inside the pilot hole
 foot_inset = foot_d / 2 + 2; // feet centres from the edges, leaving 2 mm of base around each recess
 
 c = cos(face_angle);
@@ -87,7 +88,9 @@ feet_rear_y = base_depth - foot_inset + foot_d / 2;
 assert(base_depth > face_v * c + top_flat, "base_depth must reach past the top edge");
 assert(post_d / 2 < board_lcd_outline[1] - board_holes[0][1], "bezel posts would press on the LCD");
 assert(usb_axis_n + usb_cutout[1] / 2 < bezel_h - bezel_top, "USB notch would cut through the bezel face");
-assert(screw_engagement >= 4, "screws too short: less than 4 mm of thread in the inserts");
+assert(screw_engagement >= 4, "screws too short: less than 4 mm of thread in the pilot holes");
+assert(screw_engagement + 1 <= pilot_h, "screws too long: their tips would hit the bottom of the pilot holes");
+assert(pilot_h + 1.5 <= corner_block_h, "pilot holes too deep: less than 1.5 mm of plastic below them");
 if (face_angle != 45)
     echo(str("WARNING: away from 45° the face's underside (below) or the features along its normal (above) ",
              "overhang more than 45°; check supports in the slicer"));
@@ -147,7 +150,7 @@ module board_opening() {
 }
 
 // Supports under the four board corners: the board rests on them and the screws
-// bite into heat-set inserts pressed into them. Round towards the parts on the
+// cut their thread in the pilot holes in them. Round towards the parts on the
 // back of the PCB, square into the walls they join. They run along the face
 // normal, so at 45° none of their sides overhangs more than the face itself.
 module corner_blocks() {
@@ -157,20 +160,19 @@ module corner_blocks() {
             translate([0, 0, -board_pcb_t - corner_block_h])
                 linear_extrude(corner_block_h)
                     for (h = board_holes) hull() {
-                        translate(h) circle(d = insert_d + 2 * insert_wall);
+                        translate(h) circle(d = pilot_d + 2 * boss_wall);
                         beyond_corner(h, rim);
                     }
     }
 }
 
-module insert_holes() {
-    lead_in = 0.4; // chamfer at the mouth: room for the plastic the insert pushes up
+module pilot_holes() {
+    lead_in = 0.4; // chamfer at the mouth: guides the screw and takes the plastic its thread pushes up
     on_face() on_board()
         for (h = board_holes) translate([h[0], h[1], 0]) {
-            translate([0, 0, -board_pcb_t - insert_h]) cylinder(d = insert_d, h = insert_h + eps);
+            translate([0, 0, -board_pcb_t - pilot_h]) cylinder(d = pilot_d, h = pilot_h + eps);
             translate([0, 0, -board_pcb_t - lead_in])
-                cylinder(d1 = insert_d, d2 = insert_d + 2 * lead_in, h = lead_in + eps);
-            translate([0, 0, -board_pcb_t - corner_block_h - 1]) cylinder(d = 2.5, h = corner_block_h + 2);
+                cylinder(d1 = pilot_d, d2 = pilot_d + 2 * lead_in, h = lead_in + eps);
         }
 }
 
@@ -233,7 +235,7 @@ module body() {
             corner_blocks();
             if (speaker_mount) intersection() { wedge(); speaker_ring(); }
         }
-        insert_holes();
+        pilot_holes();
         on_face() usb_cut();
         if (grille) grille_holes();
         feet_recesses();
@@ -335,6 +337,6 @@ if (part == "body") {
 }
 
 echo(str("managents case: ", face_u, " x ", base_depth, " x ", height, " mm (w x d x h)"));
-echo(str("M3 x ", screw_l, " screws engage ", screw_engagement, " mm of thread in the inserts"));
+echo(str("ST2.9 x ", screw_l, " screws engage ", screw_engagement, " mm of thread in the ", pilot_d, " mm pilot holes"));
 echo(str("tap-proof depth: the rear feet end at y = ", feet_rear_y, "; no tap can tip the case if they reach y = ",
          tap_line_y));

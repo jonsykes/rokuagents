@@ -58,6 +58,9 @@ func TestFindByNameFindsThisProcess(t *testing.T) {
 		if age := time.Since(p.StartedAt); age < 0 || age > time.Hour {
 			t.Errorf("started %v ago, want a moment ago", age)
 		}
+		if len(p.Args) == 0 || filepath.Base(p.Args[0]) != name {
+			t.Errorf("Args = %q, want the command line starting with %q", p.Args, name)
+		}
 		return
 	}
 	t.Errorf("FindByName(%q) = %+v, want this process (pid %d) among them", name, found, os.Getpid())

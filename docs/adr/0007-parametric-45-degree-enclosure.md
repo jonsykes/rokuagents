@@ -14,8 +14,9 @@ publishes a dimensioned outline drawing (and a STEP model), so the case can be d
 - A wedge with the screen face at 45°, on a deep base with rubber feet at its corners, so that pressing the screen
   neither tips nor slides it.
 - Two parts that print without supports: the body standing on its base (nothing overhangs more than 45° from
-  vertical except a few short bridges) and the bezel face down. 4 × M3 screws into heat-set inserts clamp the board
-  at its mounting pads; the bezel never touches the resistive panel.
+  vertical except a few short bridges) and the bezel face down. 4 self-tapping screws (ST2.9 × 9.5) into Ø2.5 pilot
+  holes in the printed corner supports clamp the board at its mounting pads, with no inserts or nuts to buy or heat;
+  the bezel never touches the resistive panel.
 - A small fit-test coupon to verify hole positions on the real board before the full print.
 - STLs are committed so that people without OpenSCAD can print; CI renders them and checks that each part is one
   solid.

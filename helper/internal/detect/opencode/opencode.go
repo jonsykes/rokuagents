@@ -10,6 +10,7 @@ import (
 	"errors"
 	"slices"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/tonylook/managents/helper/internal/agent"
@@ -23,9 +24,13 @@ const (
 	// toolStaleAfter: a tool stuck at "running" this long without an update is
 	// waiting on a permission or question prompt (real tools keep updating).
 	toolStaleAfter = 6 * time.Second
-	// abortedError is the error OpenCode records when the user interrupts a reply.
+	// abortedError is the error OpenCode 1 records when the user interrupts a reply.
 	abortedError = "MessageAbortedError"
 )
+
+// interruptions are the errors that mean the user stopped a reply: the one of
+// OpenCode 1, then those of OpenCode 2 (a reply and a compaction).
+var interruptions = []string{abortedError, "aborted", "compaction.interrupted"}
 
 // Message is the metadata of the newest message in a directory's sessions.
 type Message struct {
@@ -82,8 +87,8 @@ func (s *Source) Sessions(ctx context.Context, now time.Time) ([]agent.Session, 
 	var errs []error
 	seen := make(map[string]bool)
 	for _, p := range procs {
-		if p.Dir == "" || seen[p.Dir] {
-			continue // one card per folder, like the POC
+		if p.Dir == "" || seen[p.Dir] || isServer(p.Args) {
+			continue // one card per folder, like the POC; a server is not a session
 		}
 		seen[p.Dir] = true
 		session, err := s.toSession(ctx, p, now)
@@ -91,6 +96,18 @@ func (s *Source) Sessions(ctx context.Context, now time.Time) ([]agent.Session, 
 		errs = append(errs, err)
 	}
 	return sessions, errors.Join(errs...)
+}
+
+// isServer reports `opencode serve`, the background service of OpenCode 2:
+// it runs in the home folder for every session and has no session of its own.
+// The first argument is the program; flags may come before the command.
+func isServer(args []string) bool {
+	for _, arg := range args[min(1, len(args)):] {
+		if !strings.HasPrefix(arg, "-") {
+			return arg == "serve"
+		}
+	}
+	return false
 }
 
 func (s *Source) toSession(ctx context.Context, p process.Info, now time.Time) (agent.Session, error) {
@@ -126,7 +143,7 @@ func (s *Source) toSession(ctx context.Context, p process.Info, now time.Time) (
 func statusOf(msg Message, started, now time.Time) agent.Status {
 	age := now.Sub(msg.UpdatedAt)
 	live := !msg.UpdatedAt.Before(started)
-	failed := msg.ErrorName != "" && msg.ErrorName != abortedError
+	failed := msg.ErrorName != "" && !slices.Contains(interruptions, msg.ErrorName)
 	switch {
 	case live && msg.Role == "assistant" && !msg.Completed && msg.ErrorName == "":
 		return agent.StatusWorking

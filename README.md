@@ -121,7 +121,7 @@ usage. There is no network access and no telemetry, and the display has no radio
 |---|---|
 | [LCDWiki 4.0" ESP32-32E display](https://www.lcdwiki.com/4.0inch_ESP32-32E_Display), **E32R40T** | ESP32-WROOM-32E, ST7796S 320 × 480 SPI, resistive touch, CH340C USB bridge, RGB LED. Details in [docs/hardware.md](docs/hardware.md). |
 | USB-C data cable | A right-angle plug keeps it flat on the desk. |
-| Optional: the 3D-printed 45° enclosure | 2 parts, no supports, 4 × M3×10 screws, 4 × M3 heat-set inserts and 4 self-adhesive rubber feet Ø10 mm (required). Print and assembly: [enclosure/](enclosure/README.md). |
+| Optional: the 3D-printed 45° enclosure | 2 parts, no supports, 4 × ST2.9×9.5 self-tapping screws (no inserts) and 4 self-adhesive rubber feet Ø10 mm (required). Print and assembly: [enclosure/](enclosure/README.md). |
 
 <p align="center">
   <img src="enclosure/images/assembly.png" alt="The 45° enclosure (render)" width="560">
