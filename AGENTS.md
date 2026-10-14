@@ -39,7 +39,7 @@ display, and it works. No configuration, no Wi-Fi, no settings on the device. A 
 | `firmware/scripts` | `version.py` (version from the tag), `merge_image.py` (one image for 0x0) | built by `pio run` |
 | `protocol/schema`, `protocol/fixtures/{valid,invalid}` | The contract: JSON Schemas and shared test lines, read by both test suites | both of the above |
 | `enclosure/managents_case.scad`, `lib/e32r40t.scad`, `stl/`, `images/` | Parametric case, board dimensions, printable STLs, renders | `make enclosure enclosure-check` |
-| `docs/` | `architecture.md`, `protocol.md`, `hardware.md`, `troubleshooting.md`, `roadmap.md`, `adr/` (decisions), `screens/` (golden UI images) | link check, see section 4 |
+| `docs/` | `build.md` (what to buy, print, assemble), `install.md`, `using.md`, `privacy.md`, `architecture.md`, `protocol.md`, `hardware.md`, `troubleshooting.md`, `roadmap.md`, `adr/` (decisions), `screens/` (golden UI images) | link check, see section 4 |
 | `install.sh` | The one-line installer, a release asset | `shellcheck install.sh` (in `make lint`) |
 | `.github/` | `workflows/ci.yml`, `workflows/release.yml`, issue and PR templates, dependabot | |
 | `Makefile` | Every developer entry point: `make help` | |
@@ -135,15 +135,15 @@ and a new ADR.
 - **Small full folder names** (`name`, `parent/name`, `name #2`), folded to ASCII and fitted (never cut mid-name unless
   nothing else fits).
 - Error cards and the LED blink only during the first minute; the backlight dims when nobody needs it; Setup needed
-  points to `https://github.com/tonylook/managents#get-started`, so the README keeps a `## Get started` heading.
+  points to `https://github.com/tonylook/managents#get-started`, so the README keeps a `## Get started` heading, and it stays short: details go in `docs/`.
 
 ## 8. How-tos
 
 **Add an agent detector.** Full checklist in [CONTRIBUTING.md](CONTRIBUTING.md#adding-an-agent): `agent.Kind`
 (`helper/internal/agent/agent.go`); a package `helper/internal/detect/<name>` implementing `detect.Source` with its own
 small interfaces, fakes and `t.TempDir()` in tests (copy `opencode_test.go`); the canary test that conversation text
-never leaks; register in `defaultSources` (`helper/cmd/managents/commands.go`); `helper/README.md`; the README
-compatibility table; `internal/demo`. A logo is optional (unknown kinds draw a generic one). If it gets one: `AgentKind`
+never leaks; register in `defaultSources` (`helper/cmd/managents/commands.go`); `helper/README.md`; the compatibility
+table in `docs/install.md`; `internal/demo`. A logo is optional (unknown kinds draw a generic one). If it gets one: `AgentKind`
 in `core/model.hpp`, `parseKind` in `core/protocol.cpp` with a `test_protocol` case, `drawLogo` in `ui/logos.cpp`,
 colours in `ui/theme.hpp`, the `kind` list in `docs/protocol.md` and the schema description, a fixture card, then
 `make screens`. Finish with `make test lint` and a CHANGELOG line.
@@ -169,10 +169,10 @@ render with `-o` in automation), then `make enclosure enclosure-check`; run `mak
 size line and bill of materials in `enclosure/README.md` (120 x 88 x 57 mm plus the 6 mm bezel). Do not hand-edit STLs.
 
 **Add a board.** `firmware/src/board/<id>.hpp` (pins, LovyanGFX device), a PlatformIO env with its `MANAGENTS_*`
-flags, `docs/hardware.md`, the README compatibility table. The core and UI adapt to any resolution; no helper change.
+flags, `docs/hardware.md`, the compatibility table in `docs/install.md`, and the shopping notes in `docs/build.md`. The core and UI adapt to any resolution; no helper change.
 
 **Add a CLI command or flag.** `helper/cmd/managents/commands.go` (or its own file), the usage text in `main.go`, tests
-in `commands_test.go`, `helper/README.md`, and `README.md` if users see it. Commands return errors; only `cmd` prints.
+in `commands_test.go`, `helper/README.md`, and `docs/install.md` or `docs/using.md` if users see it. Commands return errors; only `cmd` prints.
 
 **Change the service or the flasher.** `helper/internal/service` and `helper/internal/flash` hide the OS and the
 serial port behind interfaces (`Commander`, `Port`); extend the fakes, never the tests' reach into the real system.
