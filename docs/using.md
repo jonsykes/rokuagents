@@ -1,6 +1,10 @@
 # Using the display
 
 <p align="center">
+  <img src="screens/showcase@2x.png" alt="The display: six cards, two working, one waiting, one failed, two idle" width="560">
+</p>
+
+<p align="center">
   <img src="screens/mixed-four.png" alt="Four cards, one of each status" width="250">
   <img src="screens/twelve-plus-more.png" alt="Nine cards on a page, page dots and a +2 badge" width="250">
   <img src="screens/setup-needed.png" alt="The Setup needed screen with a QR code" width="250">

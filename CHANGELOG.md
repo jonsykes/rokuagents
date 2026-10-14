@@ -9,7 +9,7 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 - **Enclosure: the fit-test coupon is gone.** The printed case fits the board, so the coupon (`managents-fit_test.stl`,
   the `fit_test` part and its Makefile entry) is removed; the body and bezel are unchanged.
-- **A short README, the rest in `docs/`.** The front page is one picture, what you need and three steps to get
+- **A short README, the rest in `docs/`.** The front page is one photo of the real display, what you need and three steps to get
   started, including how to tell your AI to do it. New pages: a build guide (what to buy, how to search for it, how to
   print and assemble the stand), install and flash, using the display and privacy.
 

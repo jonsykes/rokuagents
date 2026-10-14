@@ -1,7 +1,7 @@
 <h1 align="center">managents</h1>
 
 <p align="center">
-  <img src="docs/screens/showcase@2x.png" alt="The display: six cards, two working, one waiting, one failed, two idle" width="720">
+  <img src="docs/images/managents-desk.jpg" alt="The managents display in its 3D-printed stand on a desk, showing nine agent cards" width="720">
 </p>
 
 <p align="center">
