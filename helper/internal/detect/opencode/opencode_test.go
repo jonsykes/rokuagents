@@ -54,6 +54,7 @@ func TestStatusOf(t *testing.T) {
 		{"reply finished", Message{Role: "assistant", Completed: true, UpdatedAt: now}, running, agent.StatusWaiting},
 		{"reply failed", Message{Role: "assistant", ErrorName: "APIError", UpdatedAt: now}, running, agent.StatusError},
 		{"reply aborted", Message{Role: "assistant", ErrorName: abortedError, UpdatedAt: now}, running, agent.StatusWaiting},
+		{"reply interrupted (OpenCode 2)", Message{Role: "assistant", ErrorName: "aborted", UpdatedAt: now}, running, agent.StatusWaiting},
 		{"prompt just sent", Message{Role: "user", UpdatedAt: now.Add(-10 * time.Second)}, running, agent.StatusWorking},
 		{"prompt long ago", Message{Role: "user", UpdatedAt: now.Add(-10 * time.Minute)}, running, agent.StatusWaiting},
 		{"dormant", Message{Role: "assistant", Completed: true, UpdatedAt: now.Add(-3 * time.Hour)}, running, agent.StatusIdle},
@@ -99,6 +100,35 @@ func TestSessionsOnePerFolder(t *testing.T) {
 	}
 	if web.Status != agent.StatusWaiting || !web.Since.Equal(started) {
 		t.Errorf("web session without history = %+v", web)
+	}
+}
+
+func TestTheBackgroundServerIsNotASession(t *testing.T) {
+	started := now.Add(-time.Hour)
+	tests := []struct {
+		name string
+		args []string
+		card bool
+	}{
+		{"terminal", []string{"opencode"}, true},
+		{"a prompt that says serve", []string{"opencode", "run", "serve"}, true},
+		{"not readable", nil, true},
+		{"service", []string{"/home/ann/.opencode/bin/opencode", "serve", "--service"}, false},
+		{"service after a flag", []string{"opencode", "--print-logs", "serve"}, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			source := &Source{
+				Processes: fakeProcesses{{PID: 1, Dir: "/home/ann", Args: tt.args, StartedAt: started}},
+				Store:     fakeStore{},
+			}
+
+			sessions, err := source.Sessions(context.Background(), now)
+
+			if err != nil || (len(sessions) == 1) != tt.card {
+				t.Errorf("sessions = %+v, %v; want a card: %v", sessions, err, tt.card)
+			}
+		})
 	}
 }
 

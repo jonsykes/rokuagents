@@ -36,6 +36,9 @@ func findByName(ctx context.Context, name string) ([]Info, error) {
 		if dir, err := p.CwdWithContext(ctx); err == nil {
 			info.Dir = dir
 		}
+		if args, err := p.CmdlineSliceWithContext(ctx); err == nil {
+			info.Args = args
+		}
 		if millis, err := p.CreateTimeWithContext(ctx); err == nil {
 			info.StartedAt = time.UnixMilli(millis)
 		}

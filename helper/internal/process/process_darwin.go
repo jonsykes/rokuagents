@@ -34,18 +34,20 @@ func findByName(ctx context.Context, name string) ([]Info, error) {
 			continue
 		}
 		pid := int(k.Proc.P_pid)
-		found = append(found, Info{PID: pid, Dir: cwdOf(ctx, pid), StartedAt: time.Unix(k.Proc.P_starttime.Unix())})
+		dir, args := inspect(ctx, pid)
+		found = append(found, Info{PID: pid, Dir: dir, Args: args, StartedAt: time.Unix(k.Proc.P_starttime.Unix())})
 	}
 	return found, nil
 }
 
-// cwdOf returns the working directory of a process, or "" if it is not
-// readable.
-func cwdOf(ctx context.Context, pid int) string {
+// inspect returns the working directory and command line of a process, each
+// empty if it is not readable.
+func inspect(ctx context.Context, pid int) (string, []string) {
 	p, err := process.NewProcessWithContext(ctx, int32(pid))
 	if err != nil {
-		return ""
+		return "", nil
 	}
 	dir, _ := p.CwdWithContext(ctx)
-	return dir
+	args, _ := p.CmdlineSliceWithContext(ctx)
+	return dir, args
 }

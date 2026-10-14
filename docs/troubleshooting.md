@@ -33,7 +33,8 @@ The helper's log is `~/Library/Logs/managents.log` on macOS (also in Console.app
 - **Claude Code** is read from `~/.claude/sessions/<pid>.json` (the folder moves with `$CLAUDE_CONFIG_DIR`). Check
   the folder exists and has files for your running sessions. Records of sessions that are not running are ignored.
 - **OpenCode** is read from its running `opencode` processes and `~/.local/share/opencode/opencode.db`
-  (`$XDG_DATA_HOME/opencode/opencode.db` when set). Both have to be there.
+  (`$XDG_DATA_HOME/opencode/opencode.db` when set). Both have to be there. OpenCode 2 and 1 are both read; a helper
+  older than v0.2.0 only reads OpenCode 1 and shows every OpenCode 2 session as idle: upgrade it.
 - The service runs as **you**, with your home folder. A display attached to a Mac where another user's service holds
   the port shows that user's agents (see "Several users").
 
