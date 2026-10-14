@@ -159,7 +159,7 @@ fields and new firmware must accept old frames. Field limits live in three place
 **Change the UI.** Data and logic in `core/scene.*` (pure: state, time, page, link state to a `Scene`) with
 `operator==` and a `test_scene` case; drawing in `ui/scene_painter.cpp`; colours in `ui/theme.hpp` (typed RGB888
 constants: LovyanGFX reads a plain int as RGB565); fonts are ASCII-only. Then `make screens`, look at the PNGs
-(`docs/screens/showcase@2x.png` is the README hero, rendered from `protocol/fixtures/valid/showcase.jsonl`), and commit
+(`docs/screens/showcase@2x.png`, rendered from `protocol/fixtures/valid/showcase.jsonl`, opens `docs/using.md`; the README hero is the photo `docs/images/managents-desk.jpg`), and commit
 them: CI re-renders and fails on any difference. State whether it was tested on hardware. Do not weaken section 7.
 
 **Change the enclosure.** Parameters at the top of `enclosure/managents_case.scad`; board dimensions in
