@@ -5,6 +5,11 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Enclosure: the fit-test coupon is gone.** The printed case fits the board, so the coupon (`managents-fit_test.stl`,
+  the `fit_test` part and its Makefile entry) is removed; the body and bezel are unchanged.
+
 ## [0.2.0] - 2026-10-14
 
 The first release: from a prototype you build from source to something you install and plug in.
