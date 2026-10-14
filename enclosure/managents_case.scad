@@ -8,13 +8,12 @@
 // printed corner supports: no inserts, no nuts. USB-C exits on the right side.
 //
 // Render one part:   openscad -D 'part="body"' -o body.stl managents_case.scad
-// Besides the printed parts: "assembly" (preview), "section" (assembly cut in
-// half) and "fit_test" (a quick coupon to check hole positions against the real
-// board before the full print).
+// Besides the printed parts: "assembly" (preview) and "section" (assembly cut in
+// half).
 
 include <lib/e32r40t.scad>
 
-part = "assembly"; // [assembly, section, body, bezel, fit_test]
+part = "assembly"; // [assembly, section, body, bezel]
 
 /* [Shape] */
 face_angle = 45;    // screen inclination from the desk, degrees; only 45 prints without supports
@@ -286,26 +285,6 @@ module bezel() {
     }
 }
 
-// --- Fit test coupon -----------------------------------------------------------
-
-// A 1.2 mm plate with pins at the hole positions and the view-area cut-out. Lay
-// the real board face down on it: the pins must pass through the holes, and the
-// window must frame the image.
-module fit_test() {
-    plate = 1.2;
-    difference() {
-        translate([-3, -3, 0])
-            linear_extrude(plate) square([board_pcb[0] + 6, board_pcb[1] + 6]);
-        translate([board_touch_visible[0], board_touch_visible[1], -1])
-            cube([board_touch_visible[2], board_touch_visible[3], plate + 2]);
-    }
-    // Long enough to clear the PCB's back when its front stack rests on the plate.
-    for (h = board_holes)
-        translate([h[0], h[1], 0]) cylinder(d = board_hole_d - 0.3, h = plate + board_front_t + board_pcb_t + 1);
-    // USB-C edge marker.
-    translate([board_usb_center_x - 4.5, -3, 0]) cube([9, 1.5, plate + 1.5]);
-}
-
 // --- Output -------------------------------------------------------------------
 
 module assembly() {
@@ -324,8 +303,6 @@ if (part == "body") {
 } else if (part == "bezel") {
     // Face down on the bed.
     translate([0, face_v, bezel_h]) rotate([180, 0, 0]) bezel();
-} else if (part == "fit_test") {
-    fit_test();
 } else if (part == "section") {
     // Assembly cut through the middle, to check clearances behind the board.
     intersection() {

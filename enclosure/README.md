@@ -17,7 +17,6 @@ Overall size: **120 × 88 × 57 mm** (w × d × h) plus the 6 mm bezel.
 
 | Part | File | Orientation | Notes |
 |---|---|---|---|
-| Fit test | [`stl/managents-fit_test.stl`](stl/managents-fit_test.stl) | flat | **Print this first** (≈10 min). Lay the board face down on it: the four pins must pass through the mounting holes (Ø2.9 pins in Ø3.2 holes check the positions to ±0.15 mm). Lift the board and look through the window: it must frame the picture. |
 | Body | [`stl/managents-body.stl`](stl/managents-body.stl) | standing on its base, as exported | Nothing overhangs more than 45° from vertical except short bridges: the ceiling under the top flat (5.5 mm), the four feet recesses and the 2 mm grille holes. The four Ø2.5 screw pilot holes print at 45° and need no supports. |
 | Bezel | [`stl/managents-bezel.stl`](stl/managents-bezel.stl) | face down, as exported | The counterbore floors are short bridges. A textured PEI sheet gives a matte front. |
 
@@ -88,6 +87,6 @@ underside needs supports, and the plug in the board's side-entry SPEAKER socket 
 
 ## Status
 
-v1.2 is designed from the drawing and checked in renders and with geometry checks (one solid per part, overhangs,
-plug and board clearances), not yet printed. Measured corrections go into `lib/e32r40t.scad`; planned improvements
+v1.2 is designed from the vendor drawing, checked with geometry checks (one solid per part, overhangs, plug and board
+clearances), and printed: it fits and works. Measured corrections go into `lib/e32r40t.scad`; planned improvements
 are in the [roadmap](../docs/roadmap.md).

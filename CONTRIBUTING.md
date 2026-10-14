@@ -61,7 +61,7 @@ make help     # every target
 | [`helper/`](helper/README.md) | Host helper (Go): session detection, protocol encoding, serial transport, the background service, the flasher. |
 | [`protocol/`](protocol/README.md) | The contract: JSON Schemas and shared fixtures, tested by **both** sides. |
 | [`enclosure/`](enclosure/README.md) | Parametric OpenSCAD enclosure, inclined 45°, with ready-to-print STLs. |
-| [`docs/`](docs/) | [Architecture](docs/architecture.md), [protocol](docs/protocol.md), [hardware](docs/hardware.md), [troubleshooting](docs/troubleshooting.md), [decisions](docs/adr/README.md), [roadmap](docs/roadmap.md), `screens/`. |
+| [`docs/`](docs/) | [Build guide](docs/build.md), [install and flash](docs/install.md), [using the display](docs/using.md), [privacy](docs/privacy.md), [architecture](docs/architecture.md), [protocol](docs/protocol.md), [hardware](docs/hardware.md), [troubleshooting](docs/troubleshooting.md), [decisions](docs/adr/README.md), [roadmap](docs/roadmap.md), `screens/`. |
 
 ## Adding an agent
 
@@ -71,7 +71,7 @@ make help     # every target
    shape of `detect/opencode`. Map the agent's states onto `working` / `waiting` / `error` / `idle`. Add a canary test
    that conversation text never leaks (`TestConversationContentNeverLeaks`).
 3. **Register** it in `defaultSources()` in `helper/cmd/managents/commands.go`.
-4. **Document** the mapping in `helper/README.md` ("What is detected") and a row in the README's compatibility table.
+4. **Document** the mapping in `helper/README.md` ("What is detected") and a row in the compatibility table in `docs/install.md`.
 5. **A new logo is optional**: an unknown `kind` draws a generic logo, and older firmware ignores it. If it gets one:
    `AgentKind` in `firmware/lib/core/src/managents/core/model.hpp`; `parseKind` in `core/protocol.cpp` with a
    `test_protocol` case; the vector logo in `firmware/src/ui/logos.cpp` (`drawLogo`, drawn the same in every 40-pixel
@@ -121,7 +121,7 @@ Run by the owner; agents never open the serial port.
 - **Visual.** The QR code scans and opens the README's Get started section. The TN panel looks best from its
   left in rotation 1. Names and the context bar read well at 70 cm. Decide whether the LED is visible in the printed
   case.
-- **Mechanical.** Print the fit test and lay the board face down: the pins pass through the holes and the window frames
-  the picture. The bezel posts clamp the board without touching the glass. The USB-C receptacle height (3.26 mm assumed)
-  and a plug with an overmold of about 8 mm fit. The corner feet keep the case still when tapped.
+- **Mechanical.** Print the body and bezel: the board drops in, the window frames the picture, and the bezel posts
+  clamp the board without touching the glass. The USB-C receptacle height (3.26 mm assumed) and a plug with an
+  overmold of about 8 mm fit. The corner feet keep the case still when tapped.
 - **Owner settings** (once): enable private vulnerability reporting in the repository settings.

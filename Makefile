@@ -10,7 +10,7 @@ VERSION ?= $(patsubst v%,%,$(shell git describe --tags --match 'v*' --always --d
 
 CPP_SOURCES = $(shell find firmware/src firmware/lib firmware/test firmware/sim \
                 -name '*.cpp' -o -name '*.hpp' -o -name '*.h')
-STL_PARTS   = body bezel fit_test
+STL_PARTS   = body bezel
 
 # The merged firmware image (flash at 0x0) and its version, as `pio run -e e32r40t` writes them.
 FW_NAME  = managents-firmware-e32r40t
