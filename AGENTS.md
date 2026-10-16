@@ -8,8 +8,8 @@ request as any change it describes.
 ## 1. What this is
 
 managents is a USB desk display (LCDWiki 4.0" ESP32-32E, SKU E32R40T, 480x320) that shows what AI coding agents
-(Claude Code, OpenCode) are doing, one card per session, plus a Go **helper** on the computer, the ESP32 **firmware**
-(C++), the JSON-lines **protocol** between them, and a 3D-printable 45 degree **enclosure** (OpenSCAD).
+(Claude Code, OpenCode, Codex) are doing, one card per session, plus a Go **helper** on the computer, the ESP32
+**firmware** (C++), the JSON-lines **protocol** between them, and a 3D-printable 45 degree **enclosure** (OpenSCAD).
 
 Product goal: **plug and play and minimal.** The user installs one thing (the helper, with `install.sh`), plugs in the
 display, and it works. No configuration, no Wi-Fi, no settings on the device. A new board is flashed with
@@ -21,10 +21,11 @@ display, and it works. No configuration, no Wi-Fi, no settings on the device. A 
 |---|---|---|
 | `helper/cmd/managents` | CLI: `run`, `status`, `devices`, `demo`, `flash`, `service`, `version`, `help`; flags, exit codes, log setup; the only place that knows concrete types (`commands.go`, `flash.go`, `service.go`, `log.go`, `main.go`) | `cd helper && go test -race ./cmd/...` |
 | `helper/internal/agent` | Domain: `Session`, `Status`, `Kind`, `Arrange` (order and unique names). Imports no internal package. | `go test ./internal/agent` |
-| `helper/internal/detect` | `Source` interface, `All` (merge, tolerate a failing source) | `go test ./internal/detect` |
+| `helper/internal/detect` | `Source` interface, `All` (merge, tolerate a failing source), `ReadTail` | `go test ./internal/detect` |
 | `helper/internal/detect/claude` | Claude Code: session registry, stale-record filter, transcript tail (errors, context) | `go test ./internal/detect/claude` |
 | `helper/internal/detect/opencode` | OpenCode: processes plus `opencode.db` through a `Store` (SQLite, read-only) | `go test ./internal/detect/opencode` |
-| `helper/internal/process` | `System`: process list (one `sysctl` on macOS, gopsutil elsewhere) | `go test ./internal/process` |
+| `helper/internal/detect/codex` | Codex CLI: `codex` processes, the folder's thread in `state_<N>.sqlite` through a `Store`, rollout tail (turn state, error, context), approval prompts from child processes | `go test ./internal/detect/codex` |
+| `helper/internal/process` | `System`: process list and children (one `sysctl` on macOS, gopsutil elsewhere) | `go test ./internal/process` |
 | `helper/internal/protocol` | Wire types, `NewState`, `Encode`, `ParseDeviceHello`, `MinFirmware`, version helpers | `go test ./internal/protocol` |
 | `helper/internal/device` | Port enumeration, `hello` handshake, `Manager` (hot-plug, retry schedule, broadcast) | `go test ./internal/device` |
 | `helper/internal/app` | `Runner`: poll, diff, send; discovery without delaying frames | `go test ./internal/app` |
@@ -35,8 +36,8 @@ display, and it works. No configuration, no Wi-Fi, no settings on the device. A 
 | `firmware/lib/core` | Hardware-independent core: protocol decode, `buildScene`, grid, pager, `Application`, `format`, `text_fit`. No Arduino. | `cd firmware && pio test -e native` |
 | `firmware/src/{board,ui,adapters}`, `main.cpp`, `config.hpp` | E32R40T pins and device; `ScenePainter`, theme, logos; strip display, LED, serial, touch; the loop | `pio run -e e32r40t` (build), `make screens` (pixels) |
 | `firmware/sim` | Host renderer: the real UI on a headless LovyanGFX, fixtures to `docs/screens/*.png` | `make screens` |
-| `firmware/test/test_*` | 11 Unity suites (88 cases): application, contract, fixed_string, format, grid_layout, line_assembler, pager, protocol, robustness, scene, text_fit | `pio test -e native -f test_scene` |
-| `firmware/scripts` | `version.py` (version from the tag), `merge_image.py` (one image for 0x0) | built by `pio run` |
+| `firmware/test/test_*` | 11 Unity suites (89 cases): application, contract, fixed_string, format, grid_layout, line_assembler, pager, protocol, robustness, scene, text_fit | `pio test -e native -f test_scene` |
+| `firmware/scripts` | `version.py` (version from the tag), `merge_image.py` (one image for 0x0), `codex_logo.py` (writes `src/ui/codex_logo.hpp`; run by hand) | built by `pio run` |
 | `protocol/schema`, `protocol/fixtures/{valid,invalid}` | The contract: JSON Schemas and shared test lines, read by both test suites | both of the above |
 | `enclosure/managents_case.scad`, `lib/e32r40t.scad`, `stl/`, `images/` | Parametric case, board dimensions, printable STLs, renders | `make enclosure enclosure-check` |
 | `docs/` | `build.md` (what to buy, print, assemble), `install.md`, `using.md`, `privacy.md`, `architecture.md`, `protocol.md`, `hardware.md`, `troubleshooting.md`, `roadmap.md`, `adr/` (decisions), `screens/` (golden UI images) | link check, see section 4 |
@@ -70,7 +71,7 @@ Run from the repository root. `pio` may not be on `PATH`: use `make PIO=~/.local
 
 | Command | What it does | Success looks like |
 |---|---|---|
-| `make test` | helper `go test -race ./...` plus `pio test -e native` | every helper package `ok`; `88 test cases: 88 succeeded` (about 12 s) |
+| `make test` | helper `go test -race ./...` plus `pio test -e native` | every helper package `ok`; `89 test cases: 89 succeeded` (about 12 s) |
 | `make lint` | gofmt, go vet, staticcheck, `go mod tidy -diff`, govulncheck, shellcheck, clang-format | exits 0; ends with `No vulnerabilities found.` and no clang-format output |
 | `make format` | gofmt and clang-format in place | rewrites files |
 | `make build` | firmware image, then `bin/managents` with it embedded | RAM about 10% (32.6 KB), flash about 32% (419 KB) of 1.25 MB |
@@ -207,7 +208,7 @@ it prints each session's folder, so do not paste it elsewhere without asking), a
 | "Reconnecting..." | The computer slept, the service is stopped, or the cable is out |
 | `devices` says "in use by another program" | Normal while the service runs. `managents service stop` first if you need the port, `start` after |
 | `devices` says "not a managents display (new board? run: managents flash)" | Blank or foreign firmware: `managents flash` |
-| Nothing detected | `managents status` empty: check `~/.claude/sessions` (or `$CLAUDE_CONFIG_DIR`), `~/.local/share/opencode/opencode.db` |
+| Nothing detected | `managents status` empty: check `~/.claude/sessions` (or `$CLAUDE_CONFIG_DIR`), `~/.local/share/opencode/opencode.db`, `~/.codex/state_*.sqlite` (or `$CODEX_HOME`) |
 | Linux: nothing connects, no error | Permission denied on `/dev/ttyUSB*` is logged only at debug: add the user to `dialout` (or `uucp`), log in again |
 | macOS service will not start | Login Items & Extensions, allow managents; binaries in Desktop, Documents, Downloads are refused |
 | Flash fails | Cable (data, not charge-only), another program holds the port, `--baud 115200`, `--port` for several boards |
@@ -221,7 +222,11 @@ Never open the serial port yourself to "test", never delete `~/Library/Logs/mana
 - Read only: `<config dir>/sessions/<pid>.json` (`~/.claude`, or `$CLAUDE_CONFIG_DIR`); the **last 256 KiB** of the
   session transcript (growing to 4 MiB only if no token usage is found), decoding only type, sidechain flag, API-error
   flag and token counts (**never add a content field to the transcript `entry` type**); OpenCode's
-  `$XDG_DATA_HOME/opencode/opencode.db` read-only, extracting JSON fields inside SQL; process name, cwd, start time.
+  `$XDG_DATA_HOME/opencode/opencode.db` read-only, extracting JSON fields inside SQL; Codex's
+  `$CODEX_HOME/state_<N>.sqlite` read-only (only `cwd`, `rollout_path` and filter columns, never a title, preview or
+  first message) and the same tail of the thread's rollout, decoding only entry and event types, timestamps, the
+  presence of a turn error and token counts (**never add a content field to the rollout `entry` type**); process
+  name, parent, cwd, start time.
 - Send only protocol fields over USB: id, kind, folder name, status, age, context used and limit. No directory paths.
 - No network calls and no telemetry. `net/http` is not linked; keep it that way. The display has no radio.
 - Canary tests (`TestConversationContentNeverLeaks`) enforce it; extend them, never weaken them.
@@ -268,7 +273,7 @@ version, so `releases/latest/download/<asset>` stays a stable URL: do not rename
 - change section 7, or the privacy rules in section 10;
 - read conversation content, send paths, or add a network call or telemetry;
 - use real project or employer names anywhere in the repo;
-- hand-edit STLs, generated screens or the embedded firmware image;
+- hand-edit STLs, generated screens, `codex_logo.hpp` or the embedded firmware image;
 - rewrite an accepted ADR after the first release; add a new one instead;
 - add a dependency without need (the helper is one static binary; the core has no Arduino);
 - open, flash or monitor the serial port unprompted, or stop the user's service without saying so;

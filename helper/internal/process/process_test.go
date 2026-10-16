@@ -2,6 +2,7 @@ package process
 
 import (
 	"context"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -70,5 +71,53 @@ func TestFindByNameWithoutMatches(t *testing.T) {
 	found, err := System{}.FindByName(context.Background(), "no-such-process")
 	if err != nil || len(found) != 0 {
 		t.Errorf("FindByName = %+v, %v; want nothing", found, err)
+	}
+}
+
+// TestHelperProcess is not a test: TestChildrenFindsAChild runs this binary
+// with it as a child that waits until its stdin closes.
+func TestHelperProcess(t *testing.T) {
+	if os.Getenv("MANAGENTS_HELPER_PROCESS") != "1" {
+		t.Skip("only runs as a child of TestChildrenFindsAChild")
+	}
+	_, _ = io.Copy(io.Discard, os.Stdin)
+}
+
+func TestChildrenFindsAChild(t *testing.T) {
+	child := exec.Command(os.Args[0], "-test.run=^TestHelperProcess$")
+	child.Env = append(os.Environ(), "MANAGENTS_HELPER_PROCESS=1")
+	stdin, err := child.StdinPipe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := child.Start(); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		_ = stdin.Close()
+		_ = child.Wait()
+	})
+
+	found, err := System{}.Children(context.Background(), []int{os.Getpid()})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, p := range found {
+		if p.PID != child.Process.Pid {
+			continue
+		}
+		if p.Name == "" || p.StartedAt.IsZero() {
+			t.Errorf("child = %+v, want its name and start time", p)
+		}
+		return
+	}
+	t.Errorf("Children = %+v, want pid %d among them", found, child.Process.Pid)
+}
+
+func TestChildrenOfNoProcess(t *testing.T) {
+	found, err := System{}.Children(context.Background(), nil)
+	if err != nil || len(found) != 0 {
+		t.Errorf("Children = %+v, %v; want nothing", found, err)
 	}
 }

@@ -113,8 +113,8 @@ func TestScenesCoverTheDisplay(t *testing.T) {
 			t.Errorf("no %s session", status)
 		}
 	}
-	if !kinds[agent.KindClaude] || !kinds[agent.KindOpenCode] {
-		t.Errorf("agents shown: %v, want both", kinds)
+	if !kinds[agent.KindClaude] || !kinds[agent.KindOpenCode] || !kinds[agent.KindCodex] {
+		t.Errorf("agents shown: %v, want all three", kinds)
 	}
 	if !knownLimit || !unknownLimit || !noContext {
 		t.Errorf("context: limit known %v, unknown %v, none %v; want all three", knownLimit, unknownLimit, noContext)

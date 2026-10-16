@@ -15,6 +15,8 @@ bool parseKind(const char* text, AgentKind& kind) {
         kind = AgentKind::Claude;
     } else if (std::strcmp(text, "opencode") == 0) {
         kind = AgentKind::OpenCode;
+    } else if (std::strcmp(text, "codex") == 0) {
+        kind = AgentKind::Codex;
     } else {
         kind = AgentKind::Unknown;
     }

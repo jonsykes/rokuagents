@@ -52,7 +52,7 @@ Agent fields:
 | Field | Type | Meaning |
 |---|---|---|
 | `id` | string, 1 to 48 bytes | Stable for the life of the session: `<kind>:<pid>`, or `<kind>:<session id>`. Empty ids are rejected; the helper truncates longer ones at a UTF-8 boundary. |
-| `kind` | string | `claude` or `opencode`. Other values get a generic logo. |
+| `kind` | string | `claude`, `opencode` or `codex`. Other values get a generic logo. |
 | `name` | string, ≤ 64 bytes | Display name, already unique (`name`, `parent/name`, `name #2`). See [Names](#names). |
 | `path` | string, optional | **Reserved and ignored.** The helper does not send directory paths. The schema still accepts the field, so older helpers' frames stay valid. |
 | `status` | enum | `working`, `waiting`, `error`, `idle` (see below). |

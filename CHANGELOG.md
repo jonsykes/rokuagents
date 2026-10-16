@@ -5,6 +5,15 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Codex CLI.** Every open `codex` session is a card with its status and context bar. Working and the end of a turn
+  come from the thread's log, an error from a turn that failed, and an approval prompt from a tool call that waits
+  with no command of the turn running (Codex does not record its prompts). `codex exec` runs, the background app server, and
+  sessions of the IDE extension and the desktop app are not shown. Tested with the Codex 0.162 TUI and its 0.163 app server.
+- **Codex logo.** Codex cards show the Codex mark, its blue-violet blob with the `>_` prompt, rasterized from
+  the SVG by `firmware/scripts/codex_logo.py`. Earlier firmware shows them with the generic logo.
+
 ### Changed
 
 - **Enclosure: the fit-test coupon is gone.** The printed case fits the board, so the coupon (`managents-fit_test.stl`,

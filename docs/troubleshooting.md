@@ -22,7 +22,7 @@ The helper's log is `~/Library/Logs/managents.log` on macOS (also in Console.app
 | `managents devices` says **not a managents display (new board? run: managents flash)** | The board has no managents firmware, or other firmware. | `managents flash`. |
 | `managents devices` says **in use by another program** | The service holds the port, which is exactly right while it runs. | Nothing to fix. To use the port yourself (`demo`, a serial monitor, PlatformIO): `managents service stop`, then `managents service start` afterwards. Only one program can open the port at a time. |
 | The display is lit but shows **No agents open** | `managents status` | Nothing is detected: see "No agents shown". |
-| A card shows the wrong state | `managents status` shows what the helper sees; the display only draws it. | OpenCode cannot report a permission prompt, so "waiting" is inferred when a tool stays at "running" for 6 seconds: a long silent command looks the same. Sessions turn idle after 2 hours. Report anything else with the output of `managents status`. |
+| A card shows the wrong state | `managents status` shows what the helper sees; the display only draws it. | OpenCode cannot report a permission prompt, so "waiting" is inferred when a tool stays at "running" for 6 seconds: a long silent command looks the same. Codex does not record its approval prompts either: "waiting" is inferred when a tool call has had no output for 6 seconds and no command started during the turn runs in the folder, so a long call to an MCP tool looks the same. Sessions turn idle after 2 hours. Report anything else with the output of `managents status`. |
 | A card name shows `?` | The display's fonts have ASCII only. | Accents are dropped (`é` shows `e`); other characters show `?`. Known limitation. |
 | The backlight is dim | Nobody needs the screen: a minute of Reconnecting, or five minutes with no or only idle agents. | Tap it, or start an agent. |
 
@@ -35,6 +35,10 @@ The helper's log is `~/Library/Logs/managents.log` on macOS (also in Console.app
 - **OpenCode** is read from its running `opencode` processes and `~/.local/share/opencode/opencode.db`
   (`$XDG_DATA_HOME/opencode/opencode.db` when set). Both have to be there. OpenCode 2 and 1 are both read; a helper
   older than v0.2.0 only reads OpenCode 1 and shows every OpenCode 2 session as idle: upgrade it.
+- **Codex** is read from its running `codex` processes and `~/.codex/state_<N>.sqlite` (`$CODEX_HOME` when set),
+  then the thread's log under `~/.codex/sessions`. Sessions of the IDE extension and the desktop app, and
+  `codex exec` runs, are not shown. A session started with `--cd` in another folder is matched by the folder the
+  `codex` process runs in, so start it from the project folder.
 - The service runs as **you**, with your home folder. A display attached to a Mac where another user's service holds
   the port shows that user's agents (see "Several users").
 

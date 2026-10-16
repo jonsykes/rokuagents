@@ -12,7 +12,7 @@ development.
 Requires [PlatformIO Core](https://docs.platformio.org/en/latest/core/installation/index.html).
 
 ```bash
-pio test -e native                         # unit + contract tests of lib/core on this computer (88 cases, ~12 s)
+pio test -e native                         # unit + contract tests of lib/core on this computer (89 cases, ~12 s)
 pio run -e e32r40t                         # build; also writes the merged image to flash at 0x0
 pio run -e e32r40t -t upload               # flash (add --upload-port /dev/cu.usbserial-XXXX if needed)
 pio device monitor                         # see the hello message; type {"v":1,"t":"hello"} to probe

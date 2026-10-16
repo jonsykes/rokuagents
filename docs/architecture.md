@@ -15,7 +15,7 @@ flowchart LR
         direction TB
         cmd["cmd/managents<br/>CLI, composition root"]
         appr["app.Runner<br/>poll → diff → send"]
-        detect["detect.Source<br/>claude · opencode"]
+        detect["detect.Source<br/>claude · opencode · codex"]
         agentd["agent<br/>Session, Status, Arrange"]
         proto["protocol<br/>State, Hello, Encode"]
         device["device.Manager<br/>discovery, handshake, broadcast"]
@@ -46,10 +46,11 @@ flowchart LR
 | Package | Responsibility | Depends on |
 |---|---|---|
 | `internal/agent` | Domain model: `Session`, `Status`, `Kind`; `Arrange` orders sessions by activity and gives them unique short names. | nothing |
-| `internal/detect` | `Source` interface and `All` (merge, tolerate a failing source). | `agent` |
+| `internal/detect` | `Source` interface and `All` (merge, tolerate a failing source); `ReadTail`, the end of a session log. | `agent` |
 | `internal/detect/claude` | Reads Claude Code's live session registry; filters stale records by pid + start time; reads the transcript tail for API errors and context size. | `agent` (asks for process start times through a one-method interface of its own) |
 | `internal/detect/opencode` | Finds `opencode` processes; status from `opencode.db` through a `Store` interface (the SQLite implementation extracts JSON fields inside SQLite). | `agent`, `process` (for the process type, behind an interface of its own) |
-| `internal/process` | `System`: the OS process list. On macOS one `kern.proc.all` sysctl, elsewhere gopsutil. Each detector declares the one interface it needs from it. | nothing |
+| `internal/detect/codex` | Finds `codex` processes; the folder's thread from Codex's state database through a `Store` interface; status and context from the tail of the thread's rollout; an approval prompt from a tool call with no command running (the children of the `codex` processes). | `agent`, `detect` (the shared tail reader), `process` (for the process type, behind an interface of its own) |
+| `internal/process` | `System`: the OS process list and a process's children. On macOS one `kern.proc.all` sysctl, elsewhere gopsutil. Each detector declares the one interface it needs from it. | nothing |
 | `internal/protocol` | Wire types, `NewState` (cap, truncate, fit in a line), `Encode`, `ParseDeviceHello`; the version helpers and `MinFirmware`. | `agent` |
 | `internal/device` | Serial port enumeration, `hello` handshake, `Manager` (hot-plug, retry schedule, multi-display broadcast). | `protocol` |
 | `internal/app` | `Runner`: poll every second, send on change or every 2 s, discover displays every 2 s without delaying frames. | `agent`, `detect`, `protocol` |
@@ -66,7 +67,7 @@ Rules that keep it clean:
   `device.Enumerator`, `app.Displays`, `service.Commander`, the flasher's serial port), so tests use fakes and no
   test needs a real agent, port, database server or service manager.
 - Sessions are read-only metadata. Message content never leaves the reader: the Claude transcript decoder declares
-  only metadata fields and SQLite extracts OpenCode's JSON fields itself.
+  only metadata fields, so does the Codex rollout decoder, and SQLite extracts OpenCode's JSON fields itself.
 - The helper makes no network connections. It runs as the user, as a service that is always on
   ([ADR-0010](adr/0010-always-on-user-service.md)).
 

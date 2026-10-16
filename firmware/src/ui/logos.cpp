@@ -1,7 +1,9 @@
 #include "ui/logos.hpp"
 
+#include <algorithm>
 #include <cmath>
 
+#include "ui/codex_logo.hpp"
 #include "ui/theme.hpp"
 
 namespace managents::ui {
@@ -39,6 +41,43 @@ void drawOpenCode(lgfx::LovyanGFX& canvas, std::int32_t x, std::int32_t y, std::
     rect(6, 7, 10, 11, inner);
 }
 
+/// The Codex mark: its blob in the blue-violet gradient with the `>_` prompt
+/// in white, as on its colour icon. The coverage maps of codex_logo.hpp are
+/// box-filtered down to the logo size; the blob spans three quarters of the
+/// tile.
+void drawCodex(lgfx::LovyanGFX& canvas, std::int32_t x, std::int32_t y, std::int32_t size, std::uint32_t tile,
+               const std::uint32_t (&gradient)[3], std::uint32_t prompt) {
+    const std::int32_t mark = std::max<std::int32_t>(size * 3 / 4, 1);
+    const std::int32_t left = x + (size - mark) / 2;
+    const std::int32_t top = y + (size - mark) / 2;
+    for (std::int32_t row = 0; row < mark; ++row) {
+        const std::int32_t r0 = row * kCodexMapSize / mark;
+        const std::int32_t r1 = std::max((row + 1) * kCodexMapSize / mark, r0 + 1);
+        const auto along = static_cast<std::uint32_t>(row * 200 / std::max<std::int32_t>(mark - 1, 1));
+        const std::uint32_t fill =
+            along <= 100 ? blend(gradient[0], gradient[1], along) : blend(gradient[1], gradient[2], along - 100);
+        for (std::int32_t column = 0; column < mark; ++column) {
+            const std::int32_t c0 = column * kCodexMapSize / mark;
+            const std::int32_t c1 = std::max((column + 1) * kCodexMapSize / mark, c0 + 1);
+            std::uint32_t blob = 0;
+            std::uint32_t cut = 0;
+            for (std::int32_t r = r0; r < r1; ++r) {
+                for (std::int32_t c = c0; c < c1; ++c) {
+                    blob += kCodexBlob[r * kCodexMapSize + c];
+                    cut += kCodexPrompt[r * kCodexMapSize + c];
+                }
+            }
+            const auto cells = static_cast<std::uint32_t>((r1 - r0) * (c1 - c0));
+            if (blob == 0) {
+                continue;
+            }
+            std::uint32_t ink = blend(tile, fill, blob * 100 / (255 * cells));
+            ink = blend(ink, prompt, cut * 100 / (255 * cells));
+            canvas.drawPixel(left + column, top + row, ink);
+        }
+    }
+}
+
 /// The rounded tile with the agent's mark, drawn straight onto `canvas`.
 void drawTile(lgfx::LovyanGFX& canvas, core::AgentKind kind, std::int32_t x, std::int32_t y, std::int32_t size,
               bool dimmed, std::uint32_t background) {
@@ -53,6 +92,11 @@ void drawTile(lgfx::LovyanGFX& canvas, core::AgentKind kind, std::int32_t x, std
             break;
         case core::AgentKind::OpenCode:
             drawOpenCode(canvas, x, y, size, ink(color::kOpenCodeOuter), ink(color::kOpenCodeInner), tile);
+            break;
+        case core::AgentKind::Codex:
+            drawCodex(canvas, x, y, size, tile,
+                      {ink(color::kCodexTop), ink(color::kCodexMiddle), ink(color::kCodexBottom)},
+                      ink(color::kCodexPrompt));
             break;
         case core::AgentKind::Unknown:
             canvas.fillCircle(x + size / 2, y + size / 2, size / 4, ink(color::kMutedText));

@@ -32,6 +32,10 @@ constexpr std::uint32_t kLogoTile = 0x131010;
 constexpr std::uint32_t kClaude = 0xD97757;
 constexpr std::uint32_t kOpenCodeOuter = 0xFFFFFF;
 constexpr std::uint32_t kOpenCodeInner = 0x5A5858;
+constexpr std::uint32_t kCodexTop = 0xB1A7FF;  ///< the Codex gradient, top to bottom
+constexpr std::uint32_t kCodexMiddle = 0x7A9DFF;
+constexpr std::uint32_t kCodexBottom = 0x3941FF;
+constexpr std::uint32_t kCodexPrompt = 0xFFFFFF;
 constexpr std::uint32_t kBlack = 0x000000;
 }  // namespace color
 

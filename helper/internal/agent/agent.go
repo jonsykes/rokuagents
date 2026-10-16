@@ -10,6 +10,7 @@ type Kind string
 const (
 	KindClaude   Kind = "claude"
 	KindOpenCode Kind = "opencode"
+	KindCodex    Kind = "codex"
 )
 
 // Status is what the agent is doing right now, from the user's point of view.

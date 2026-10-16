@@ -42,7 +42,7 @@
           "maxLength": 48,
           "description": "<kind>:<pid or session id>, stable for the session; the display keeps 48 bytes."
         },
-        "kind": { "type": "string", "description": "claude | opencode; other values render a generic logo." },
+        "kind": { "type": "string", "description": "claude | opencode | codex; other values render a generic logo." },
         "name": { "type": "string", "description": "Display name, already disambiguated by the helper." },
         "path": {
           "type": "string",

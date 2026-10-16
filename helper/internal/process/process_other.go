@@ -4,6 +4,7 @@ package process
 
 import (
 	"context"
+	"slices"
 	"time"
 
 	"github.com/shirou/gopsutil/v4/process"
@@ -22,17 +23,34 @@ func startTime(ctx context.Context, pid int) (time.Time, bool) {
 }
 
 func findByName(ctx context.Context, name string) ([]Info, error) {
+	return list(ctx, func(p *process.Process) bool {
+		pname, err := p.NameWithContext(ctx)
+		return err == nil && pname == name
+	})
+}
+
+func children(ctx context.Context, parents []int) ([]Info, error) {
+	return list(ctx, func(p *process.Process) bool {
+		ppid, err := p.PpidWithContext(ctx)
+		return err == nil && slices.Contains(parents, int(ppid))
+	})
+}
+
+// list describes the processes that match.
+func list(ctx context.Context, match func(*process.Process) bool) ([]Info, error) {
 	all, err := process.ProcessesWithContext(ctx)
 	if err != nil {
 		return nil, err
 	}
 	var found []Info
 	for _, p := range all {
-		pname, err := p.NameWithContext(ctx)
-		if err != nil || pname != name {
+		if !match(p) {
 			continue
 		}
 		info := Info{PID: int(p.Pid)}
+		if name, err := p.NameWithContext(ctx); err == nil {
+			info.Name = name
+		}
 		if dir, err := p.CwdWithContext(ctx); err == nil {
 			info.Dir = dir
 		}

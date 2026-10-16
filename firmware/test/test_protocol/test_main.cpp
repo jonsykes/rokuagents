@@ -41,6 +41,19 @@ void decodes_a_state_frame() {
     TEST_ASSERT_FALSE(opencode.context.known);
 }
 
+void decodes_every_known_kind() {
+    HostState state;
+    const char* line = R"({"v":1,"t":"state","now":1,"agents":[)"
+                       R"({"id":"claude:1","kind":"claude","name":"a","status":"working","age":0},)"
+                       R"({"id":"opencode:2","kind":"opencode","name":"b","status":"working","age":0},)"
+                       R"({"id":"codex:3","kind":"codex","name":"c","status":"working","age":0}]})";
+    TEST_ASSERT_EQUAL(MessageType::State, decode(line, state));
+    TEST_ASSERT_EQUAL_UINT8(3, state.agentCount);
+    TEST_ASSERT_EQUAL(AgentKind::Claude, state.agents[0].kind);
+    TEST_ASSERT_EQUAL(AgentKind::OpenCode, state.agents[1].kind);
+    TEST_ASSERT_EQUAL(AgentKind::Codex, state.agents[2].kind);
+}
+
 void decodes_an_empty_frame_with_defaults() {
     HostState state;
     TEST_ASSERT_EQUAL(MessageType::State, decode(R"({"v":1,"t":"state","now":5,"agents":[]})", state));
@@ -52,7 +65,7 @@ void decodes_an_empty_frame_with_defaults() {
 void keeps_unknown_kinds_and_fields() {
     HostState state;
     const char* line = R"({"v":1,"t":"state","now":1,"future":true,"agents":[)"
-                       R"({"id":"x:1","kind":"codex","name":"n","status":"waiting","age":0,"extra":[1,2]}]})";
+                       R"({"id":"x:1","kind":"aider","name":"n","status":"waiting","age":0,"extra":[1,2]}]})";
     TEST_ASSERT_EQUAL(MessageType::State, decode(line, state));
     TEST_ASSERT_EQUAL(AgentKind::Unknown, state.agents[0].kind);
 }
@@ -155,6 +168,7 @@ int main() {
     UNITY_BEGIN();
     RUN_TEST(decodes_a_state_frame);
     RUN_TEST(decodes_an_empty_frame_with_defaults);
+    RUN_TEST(decodes_every_known_kind);
     RUN_TEST(keeps_unknown_kinds_and_fields);
     RUN_TEST(caps_agents_and_counts_the_rest);
     RUN_TEST(clamps_the_overflow_badge);
