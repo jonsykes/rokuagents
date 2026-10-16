@@ -11,6 +11,7 @@ import (
 // Info describes a running process.
 type Info struct {
 	PID       int
+	Name      string   // executable name, at most 16 bytes on macOS
 	Dir       string   // working directory, empty if not readable
 	Args      []string // command line, program first; empty if not readable
 	StartedAt time.Time
@@ -27,4 +28,9 @@ func (System) StartTime(ctx context.Context, pid int) (time.Time, bool) {
 // FindByName lists running processes whose executable name is exactly name.
 func (System) FindByName(ctx context.Context, name string) ([]Info, error) {
 	return findByName(ctx, name)
+}
+
+// Children lists the running processes whose parent is one of parents.
+func (System) Children(ctx context.Context, parents []int) ([]Info, error) {
+	return children(ctx, parents)
 }

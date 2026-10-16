@@ -2,6 +2,7 @@ package process
 
 import (
 	"context"
+	"slices"
 	"time"
 
 	"github.com/shirou/gopsutil/v4/process"
@@ -21,6 +22,18 @@ func startTime(_ context.Context, pid int) (time.Time, bool) {
 }
 
 func findByName(ctx context.Context, name string) ([]Info, error) {
+	// p_comm keeps the first 16 bytes (MAXCOMLEN) of the executable name,
+	// enough for the names the detectors look for.
+	return list(ctx, func(k *unix.KinfoProc) bool { return unix.ByteSliceToString(k.Proc.P_comm[:]) == name })
+}
+
+func children(ctx context.Context, parents []int) ([]Info, error) {
+	return list(ctx, func(k *unix.KinfoProc) bool { return slices.Contains(parents, int(k.Eproc.Ppid)) })
+}
+
+// list describes the processes that match, reading the working directory and
+// command line of those only.
+func list(ctx context.Context, match func(*unix.KinfoProc) bool) ([]Info, error) {
 	all, err := unix.SysctlKinfoProcSlice("kern.proc.all")
 	if err != nil {
 		return nil, err
@@ -28,14 +41,18 @@ func findByName(ctx context.Context, name string) ([]Info, error) {
 	var found []Info
 	for i := range all {
 		k := &all[i]
-		// p_comm keeps the first 16 bytes (MAXCOMLEN) of the executable name,
-		// enough for the names the detectors look for.
-		if unix.ByteSliceToString(k.Proc.P_comm[:]) != name {
+		if !match(k) {
 			continue
 		}
 		pid := int(k.Proc.P_pid)
 		dir, args := inspect(ctx, pid)
-		found = append(found, Info{PID: pid, Dir: dir, Args: args, StartedAt: time.Unix(k.Proc.P_starttime.Unix())})
+		found = append(found, Info{
+			PID:       pid,
+			Name:      unix.ByteSliceToString(k.Proc.P_comm[:]),
+			Dir:       dir,
+			Args:      args,
+			StartedAt: time.Unix(k.Proc.P_starttime.Unix()),
+		})
 	}
 	return found, nil
 }

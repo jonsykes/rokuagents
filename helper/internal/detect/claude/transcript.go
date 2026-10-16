@@ -4,10 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"io"
-	"os"
 
 	"github.com/tonylook/managents/helper/internal/agent"
+	"github.com/tonylook/managents/helper/internal/detect"
 )
 
 // Only the end of a transcript is scanned: transcriptTail bytes, growing
@@ -61,7 +60,7 @@ func (e entry) contextTokens() int {
 // last main-thread model call had in its context window.
 func summarizeTranscript(path string) (transcriptSummary, error) {
 	for size := int64(transcriptTail); ; size *= 4 {
-		tail, whole, err := readTail(path, size)
+		tail, whole, err := detect.ReadTail(path, size)
 		if err != nil {
 			return transcriptSummary{}, err
 		}
@@ -100,25 +99,4 @@ func summarize(tail []byte) (transcriptSummary, error) {
 		return transcriptSummary{}, errNoEntries
 	}
 	return summary, nil
-}
-
-// readTail returns at most the last size bytes of the file, and whether that
-// is the whole file.
-func readTail(path string, size int64) ([]byte, bool, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, false, err
-	}
-	defer f.Close()
-
-	info, err := f.Stat()
-	if err != nil {
-		return nil, false, err
-	}
-	offset := max(info.Size()-size, 0)
-	if _, err := f.Seek(offset, io.SeekStart); err != nil {
-		return nil, false, err
-	}
-	data, err := io.ReadAll(f)
-	return data, offset == 0, err
 }
