@@ -46,6 +46,7 @@ source in this repository, and `make firmware` rebuilds the image from it.
 | LovyanGFX | 1.2.30 | BSD-2-Clause | 2020 lovyan03 |
 | ArduinoJson | 7.3.2 | MIT | 2014-2026 Benoit Blanchon |
 | FreeSans and FreeSansBold glyphs (GNU FreeFont, as converted by Adafruit GFX) | 9, 12, 18, 24 pt | GPL-3.0-or-later with the font exception | GNU FreeFont contributors |
+| Codex icon path (LobeHub icons, `@lobehub/icons-static-svg`) | 1.95.1 | MIT | LobeHub |
 
 **Arduino-ESP32 and relinking.** The firmware image links the Arduino-ESP32 core, which is licensed
 under the LGPL version 2.1 or later. The complete corresponding source of the firmware, the build
@@ -66,6 +67,10 @@ Industries; the text above its license must be included in any redistribution).
 converter. FreeFont is GPL-3.0-or-later with an exception that lets a document or program that only embeds
 the font be distributed under other terms, so the firmware keeps its own license. FreeFont's source and
 license are at https://www.gnu.org/software/freefont/.
+
+**Agent logos.** The Codex logo is rasterized by `firmware/scripts/codex_logo.py` from the Codex icon of
+LobeHub's icon set. The marks identify the agents a card belongs to: Claude is a trademark of Anthropic and
+Codex of OpenAI, and managents is not affiliated with either.
 
 ## License texts
 
