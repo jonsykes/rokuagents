@@ -14,9 +14,10 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license"></a>
 </p>
 
-One card per open [Claude Code](https://claude.com/claude-code) or [OpenCode](https://opencode.ai) session: green while
-it works, yellow when it waits for you, red when it failed, dark when it has been idle for hours. Plug it in and stop
-alt-tabbing to check whether an agent needs you.
+One card per open [Claude Code](https://claude.com/claude-code), [OpenCode](https://opencode.ai) or
+[Codex](https://developers.openai.com/codex/cli) session: green while it works, yellow when it waits for you, red
+when it failed, dark when it has been idle for hours. Plug it in and stop alt-tabbing to check whether an agent needs
+you.
 
 managents is a small 4-inch screen, a helper program on your computer and a 3D-printed stand. This repository has
 everything you need to build one yourself.
@@ -28,7 +29,7 @@ everything you need to build one yourself.
 - **A USB-C data cable.**
 - **The stand:** two 3D-printed parts (the files are in this repository), 4 self-tapping screws ST2.9 x 9.5 and 4
   self-adhesive rubber feet.
-- **A Mac or Linux computer** that runs Claude Code or OpenCode.
+- **A Mac or Linux computer** that runs Claude Code, OpenCode or Codex.
 
 Where to buy each part and what to type in the search box: [Build guide](docs/build.md).
 
@@ -47,7 +48,7 @@ Where to buy each part and what to type in the search box: [Build guide](docs/bu
    managents flash
    ```
 
-Within a couple of seconds every open Claude Code and OpenCode session is a card on the display. The helper starts
+Within a couple of seconds every open Claude Code, OpenCode and Codex session is a card on the display. The helper starts
 at login, so from now on you only plug the display in. The details, Windows and the uninstall are in
 [Install and flash](docs/install.md).
 
@@ -81,5 +82,5 @@ managents grew out of *agent-lights*, a phone-based proof of concept. Built with
 [modernc.org/sqlite](https://gitlab.com/cznic/sqlite); see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Released
 under the [MIT license](LICENSE).
 
-Claude and Claude Code are trademarks of Anthropic; OpenCode belongs to its authors. This project is not affiliated
-with either.
+Claude and Claude Code are trademarks of Anthropic; Codex is a trademark of OpenAI; OpenCode belongs to its authors.
+This project is not affiliated with any of them.

@@ -11,7 +11,7 @@ command each: [Install and flash](install.md).
 | Self-tapping screws ST2.9 x 9.5 | 4 |
 | Self-adhesive rubber feet, 10 mm round | 4 |
 
-You also need a Mac or Linux computer that runs Claude Code or OpenCode, and a Phillips or Torx screwdriver that fits
+You also need a Mac or Linux computer that runs Claude Code, OpenCode or Codex, and a Phillips or Torx screwdriver that fits
 your screws.
 
 <p align="center">
@@ -75,7 +75,7 @@ the base. Step by step, with print notes and a picture of every part: [enclosure
 
 ## 4. The computer
 
-macOS (tested on Apple silicon) or Linux, with Claude Code and/or OpenCode. The helper has no other requirements and
+macOS (tested on Apple silicon) or Linux, with Claude Code, OpenCode or Codex. The helper has no other requirements and
 needs no `sudo`. Supported systems: [Install and flash](install.md#supported-systems).
 
 ## 5. Software

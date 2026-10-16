@@ -18,7 +18,8 @@ What the software does and does not do, so you can judge a report against it.
 - **The helper runs as you**, never as root, and `managents service install` refuses to install as root. It needs no
   privileges.
 - **What it reads:** Claude Code's session files, the end of each open session's transcript (decoded for status,
-  timestamps and token counts only), OpenCode's database read-only, and the process list.
+  timestamps and token counts only), OpenCode's database read-only, Codex's thread list read-only with the end of
+  each open thread's log (decoded the same way), and the process list.
 - **What it sends:** only to a USB serial port, only after the device answered a `hello` handshake as a managents
   display: folder names, statuses, ages and context token counts. No directory paths, no conversation text.
 - **No network.** The helper makes no network connections of its own. `install.sh` downloads from GitHub releases and
