@@ -1,5 +1,5 @@
 // Command managents streams the status of local AI coding agents (Claude Code,
-// OpenCode) to a managents USB display.
+// OpenCode, Codex) to a managents USB display.
 package main
 
 import (

@@ -38,6 +38,7 @@ Bare `managents` prints the help. Every command takes `-h`.
 |---|---|---|
 | Claude Code (terminal and desktop app) | `<config dir>/sessions/<pid>.json`, the live session registry. The config dir is `~/.claude`, or `$CLAUDE_CONFIG_DIR` when set. Only files named `<digits>.json` are read. A record counts only if its pid is running **and** started when the record says (stale files from crashed sessions are ignored). | `busy` → working; a pending permission prompt or question → waiting, and it stays waiting; idle at the prompt → waiting, or error when the last main-thread message is an API error, and either turns idle after 2 h. Context size comes from the last main-thread model call that reports usage (API-error entries have none and are skipped); the limit is 200k, or 1M once a session goes past 200k (force it with `--claude-context`). |
 | OpenCode | Running `opencode` processes (one card per working directory, owned by the oldest process there; the background `opencode serve` is not a session) and `$XDG_DATA_HOME/opencode/opencode.db`, default `~/.local/share/opencode/opencode.db`, opened read-only: `session_message` of OpenCode 2, or `message` and `part` of OpenCode 1. | Newest step of the folder unfinished (or finished with tool calls, so the turn goes on), or a prompt sent < 90 s ago → working (its age counts from the prompt; a reply written before the process started is not working); the turn's `idle` row ends it; assistant error or a failed turn → error (an interruption is not an error); a tool frozen at `running` for > 6 s → waiting; error and waiting turn idle after 2 h. OpenCode does not store pending permissions, so the 6 s rule cannot tell a long silent command from a permission prompt. A store error is logged and the sessions are still shown. |
+| Codex CLI | Running `codex` processes (one card per working directory, owned by the oldest process there; `codex exec`, the background `codex app-server` and the other service subcommands are not sessions). The folder's thread is the newest one in `$CODEX_HOME/state_<N>.sqlite`, default `~/.codex`, opened read-only (not archived, not a subagent's, not run by `codex exec` or `codex mcp-server`); its status comes from the end of the thread's rollout (the same tail as for Claude Code). | `task_started` without its `task_complete` → working (its age counts from the start of the turn; a turn written before the process started is not working); `task_complete` → waiting, or error when it carries an error; `turn_aborted` (an interruption) → waiting; a tool call left without output for > 6 s while no command started during the turn runs in the folder (a child of a `codex` process, the TUI or its app server; a long command is polled by later calls, so the turn is what counts) → waiting, which is how an approval prompt or a question shows; error and waiting turn idle after 2 h. Context size and limit come from the last token count (`last_token_usage` of the model's `model_context_window`). Codex sessions of the IDE extension or the desktop app have no `codex` process of their own and are not shown. |
 
 Cards are ordered by activity: working sessions first (in start order, so they don't swap places), then everything
 else with the most recent status change first. Agents left waiting or idle for a long time sink to the later pages.
@@ -89,11 +90,13 @@ Lines worth knowing (the exact text):
 ## Privacy
 
 The helper reads the session registry, the **end** of each open session's transcript (the last 256 KiB, growing to
-at most 4 MiB only when no token usage is found there), OpenCode's database read-only, and the process list. The
-transcript is decoded for four things only: entry type, sidechain flag, API-error flag and token counts. Conversation
+at most 4 MiB only when no token usage is found there), OpenCode's database read-only, Codex's thread list read-only
+(folder and rollout path only) with the same tail of each thread's rollout, and the process list. A Claude Code
+transcript is decoded for four things only: entry type, sidechain flag, API-error flag and token counts; a Codex
+rollout for entry and event types, timestamps, whether a turn ended in an error, and token counts. Conversation
 text is never decoded, stored, logged or sent. The frame on the USB cable carries the folder name, status, age and
 context token counts, nothing else (no directory paths). No network connections. Canary tests
-(`TestConversationContentNeverLeaks` in both detector packages) enforce it.
+(`TestConversationContentNeverLeaks` in every detector package) enforce it.
 
 ## Layout
 

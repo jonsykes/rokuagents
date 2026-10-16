@@ -1,6 +1,6 @@
 // Package detect finds the agent sessions open on this computer.
 //
-// Each agent product has its own Source (see the claude and opencode
+// Each agent product has its own Source (see the claude, opencode and codex
 // subpackages). Sources only read session metadata — status, working
 // directory, timestamps, token counts — never conversation content.
 package detect

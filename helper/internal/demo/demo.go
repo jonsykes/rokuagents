@@ -53,7 +53,7 @@ func (s *Source) SceneAt(now time.Time) (Scene, int) {
 }
 
 // Scenes returns the demo sequence for scenes that come up at shownAt. They
-// cover every status, both agents, grids from one card to a full page of nine,
+// cover every status, every agent, grids from one card to a full page of nine,
 // a second page, and the naming of folders that share a name.
 func Scenes(shownAt time.Time) []Scene {
 	// session is open since id minutes, so ids also give the start order.
@@ -67,7 +67,7 @@ func Scenes(shownAt time.Time) []Scene {
 		s.Context = &agent.ContextUsage{Used: used, Limit: limit}
 		return s
 	}
-	const claude, opencode = agent.KindClaude, agent.KindOpenCode
+	const claude, opencode, codex = agent.KindClaude, agent.KindOpenCode, agent.KindCodex
 	const working, waiting, idle, failed = agent.StatusWorking, agent.StatusWaiting, agent.StatusIdle, agent.StatusError
 
 	mixed := []agent.Session{
@@ -81,13 +81,13 @@ func Scenes(shownAt time.Time) []Scene {
 		withContext(session(10, claude, "web-shop", working, 40*time.Second), 120000, 200000),
 		session(11, opencode, "web-shop", waiting, 2*time.Minute), // "web-shop #1" and "#2"
 		session(12, claude, "client/api", working, 8*time.Second),
-		session(13, claude, "server/api", waiting, 30*time.Second), // "client/api" and "server/api"
+		session(13, codex, "server/api", waiting, 30*time.Second), // "client/api" and "server/api"
 		session(14, opencode, "café-orders", idle, 3*time.Hour),
 		withContext(session(15, claude, "billing", failed, 20*time.Second), 64000, 200000),
 		session(16, claude, "sandbox", idle, 26*time.Hour),
 	}
 
-	kinds := []agent.Kind{claude, claude, opencode}
+	kinds := []agent.Kind{claude, claude, opencode, codex}
 	statuses := []agent.Status{working, waiting, working, failed, idle, waiting}
 	var longNames []agent.Session
 	for i, dir := range []string{
@@ -112,7 +112,7 @@ func Scenes(shownAt time.Time) []Scene {
 		{Title: "four statuses", Sessions: mixed},
 		{Title: "context almost full", Sessions: []agent.Session{
 			withContext(session(5, claude, "refactor-auth", working, 3*time.Minute), 150000, 200000),
-			withContext(session(6, claude, "db-migration", waiting, 20*time.Second), 188000, 200000),
+			withContext(session(6, codex, "db-migration", waiting, 20*time.Second), 241000, 258400),
 		}},
 		{Title: "seven agents: folders that share a name", Sessions: sameNames},
 		{Title: "nine agents: long folder names", Sessions: longNames},

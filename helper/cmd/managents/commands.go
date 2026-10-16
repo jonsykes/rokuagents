@@ -17,6 +17,7 @@ import (
 	"github.com/tonylook/managents/helper/internal/demo"
 	"github.com/tonylook/managents/helper/internal/detect"
 	"github.com/tonylook/managents/helper/internal/detect/claude"
+	"github.com/tonylook/managents/helper/internal/detect/codex"
 	"github.com/tonylook/managents/helper/internal/detect/opencode"
 	"github.com/tonylook/managents/helper/internal/device"
 	"github.com/tonylook/managents/helper/internal/process"
@@ -32,6 +33,7 @@ func defaultSources(home string, claudeWindow int) []detect.Source {
 	return []detect.Source{
 		claudeSource,
 		&opencode.Source{Processes: procs, Store: opencode.SQLiteStore{Path: opencode.DefaultDatabasePath(home)}},
+		codex.NewSource(home, procs),
 	}
 }
 
