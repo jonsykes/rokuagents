@@ -48,7 +48,13 @@ Only Claude Code sessions are shown on the TV. OpenCode and Codex appear only on
 ## Get started
 
 **The easy way: the menu bar app.** It runs the server, installs the channel on the Roku from its Settings window,
-and restarts the server when your Mac's address changes; the channel finds it there by itself. Build and open it with:
+and reinstalls it by itself when your Mac's address changes. Its menu lists your sessions:
+
+<p align="center">
+  <img src="docs/images/rokuagents-menu.png" alt="The rokuagents menu listing nine sessions with coloured status dots, and its commands" width="380">
+</p>
+
+Build and open it with:
 
 ```sh
 git clone https://github.com/jonsykes/rokuagents.git
