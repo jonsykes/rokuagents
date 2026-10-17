@@ -41,9 +41,17 @@ echo "built $app ($version)"
 
 if [ "${1:-}" = "--install" ]; then
   mkdir -p "$HOME/Applications"
+  installed="$HOME/Applications/rokuagents.app"
   osascript -e 'quit app "rokuagents"' >/dev/null 2>&1 || true
-  rm -rf "$HOME/Applications/rokuagents.app"
+  # Opening the new copy while the old one is still quitting fails with
+  # LaunchServices error -600, so wait (up to 10 s) for it to exit.
+  tries=0
+  while pgrep -f "$installed/Contents/MacOS/RokuAgents" >/dev/null && [ $tries -lt 20 ]; do
+    sleep 0.5
+    tries=$((tries + 1))
+  done
+  rm -rf "$installed"
   cp -R "$app" "$HOME/Applications/"
-  open "$HOME/Applications/rokuagents.app"
   echo "installed ~/Applications/rokuagents.app"
+  open "$installed" || { sleep 2; open "$installed"; }
 fi
