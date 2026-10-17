@@ -29,12 +29,26 @@ public struct TokenStore: Sendable {
         let token = (0..<16).map { _ in String(format: "%02x", UInt8.random(in: 0...255, using: &generator)) }
             .joined()
         let files = FileManager.default
-        try files.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true,
-                                  attributes: [.posixPermissions: 0o700])
-        try? files.removeItem(at: url)
-        guard files.createFile(atPath: url.path, contents: Data((token + "\n").utf8),
-                               attributes: [.posixPermissions: 0o600])
-        else { throw CocoaError(.fileWriteUnknown, userInfo: [NSFilePathErrorKey: url.path]) }
+        let dir = url.deletingLastPathComponent()
+        try files.createDirectory(at: dir, withIntermediateDirectories: true)
+        try files.setAttributes([.posixPermissions: 0o700], ofItemAtPath: dir.path)
+
+        // Written to a file created as 600 from the start, then renamed over
+        // the old one, so the token is never readable by others.
+        let temporary = dir.appendingPathComponent(".token-\(UUID().uuidString)")
+        let fd = open(temporary.path, O_CREAT | O_EXCL | O_WRONLY, 0o600)
+        guard fd >= 0 else { throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
+        let handle = FileHandle(fileDescriptor: fd, closeOnDealloc: true)
+        do {
+            try handle.write(contentsOf: Data((token + "\n").utf8))
+            try handle.close()
+            guard rename(temporary.path, url.path) == 0 else {
+                throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO)
+            }
+        } catch {
+            try? files.removeItem(at: temporary)
+            throw error
+        }
         return token
     }
 }

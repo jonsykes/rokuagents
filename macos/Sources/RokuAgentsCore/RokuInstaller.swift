@@ -35,12 +35,14 @@ public struct RokuInstaller: Sendable {
     public enum Failure: Error, LocalizedError {
         case badHost
         case wrongPassword
+        case notARoku
         case http(Int)
 
         public var errorDescription: String? {
             switch self {
             case .badHost: "The Roku address is not valid."
             case .wrongPassword: "The Roku rejected the developer password."
+            case .notARoku: "The device at that address did not answer as a Roku."
             case .http(let code): "The Roku answered HTTP \(code)."
             }
         }
@@ -84,6 +86,26 @@ public struct RokuInstaller: Sendable {
         fatalError("unreachable")
     }
 
+    /// The Roku's serial number, from ECP's device-info (no password needed).
+    /// The app checks it before reinstalling by itself, so a different device
+    /// at the same address on another network never gets the channel and token.
+    public func serialNumber() async throws -> String {
+        guard let url = URL(string: "http://\(host):8060/query/device-info") else { throw Failure.badHost }
+        let (data, _) = try await URLSession.shared.data(for: URLRequest(url: url, timeoutInterval: 5))
+        guard let serial = Self.serialNumber(inDeviceInfo: String(decoding: data, as: UTF8.self)) else {
+            throw Failure.notARoku
+        }
+        return serial
+    }
+
+    static func serialNumber(inDeviceInfo xml: String) -> String? {
+        guard let start = xml.range(of: "<serial-number>"),
+              let end = xml.range(of: "</serial-number>", range: start.upperBound..<xml.endIndex)
+        else { return nil }
+        let serial = xml[start.upperBound..<end.lowerBound].trimmingCharacters(in: .whitespaces)
+        return serial.isEmpty ? nil : serial
+    }
+
     /// Opens the sideloaded channel, which the Roku only does by itself after
     /// a changed install.
     public func launch() async throws {
@@ -95,7 +117,8 @@ public struct RokuInstaller: Sendable {
 }
 
 /// Answers the installer's digest challenge once; a second challenge means the
-/// password is wrong, and the request then fails with 401.
+/// password is wrong, and the request then fails with 401. Only Digest is
+/// answered: Basic would send the password in clear text over plain HTTP.
 private final class DigestCredentials: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
     let password: String
 
@@ -104,9 +127,8 @@ private final class DigestCredentials: NSObject, URLSessionTaskDelegate, @unchec
     func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge)
         async -> (URLSession.AuthChallengeDisposition, URLCredential?)
     {
-        let method = challenge.protectionSpace.authenticationMethod
-        guard method == NSURLAuthenticationMethodHTTPDigest || method == NSURLAuthenticationMethodHTTPBasic else {
-            return (.performDefaultHandling, nil)
+        guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodHTTPDigest else {
+            return (.cancelAuthenticationChallenge, nil)
         }
         guard challenge.previousFailureCount == 0 else { return (.rejectProtectionSpace, nil) }
         return (.useCredential, URLCredential(user: "rokudev", password: password, persistence: .none))

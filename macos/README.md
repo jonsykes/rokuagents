@@ -47,7 +47,7 @@ missing. **New Token** in Settings replaces it and reinstalls the channel.
 | Network | Automatic uses the lowest-numbered Wi-Fi or Ethernet interface with a home network address (en0 before en1), never a VPN or virtual machine bridge. Pick an interface to stay on it. |
 | Port | 8787 by default. Press Return to apply. |
 | Send session titles | Off, the TV shows folder names only (`--titles=false`). |
-| Reinstall when this Mac's address changes | On by default. Off, the TV shows "Reconnecting..." until you install again. |
+| Reinstall when this Mac's address changes | On by default. Off, the TV shows "Reconnecting..." until you install again. The app only reinstalls by itself on the Roku you last installed on: it checks the device's serial number first, so on another network a different device at the same address never gets the channel or the token. |
 
 The server's log is `~/Library/Logs/rokuagents-serve.log` (menu: **Open Log**).
 

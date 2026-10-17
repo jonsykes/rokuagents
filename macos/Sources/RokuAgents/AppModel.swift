@@ -138,7 +138,7 @@ final class AppModel {
         if let previous, previous != next, autoReinstall, rokuConfigured {
             Task {
                 try? await Task.sleep(for: .seconds(2))
-                await installOnRoku(reason: "your Mac moved to \(chosen.ipv4)")
+                await installOnRoku(reason: "your Mac moved to \(chosen.ipv4)", automatic: true)
             }
         }
     }
@@ -180,7 +180,11 @@ final class AppModel {
 
     // MARK: Roku
 
-    func installOnRoku(reason: String? = nil) async {
+    /// Installs the channel on the Roku. An automatic install (after an
+    /// address or token change) only goes ahead when the device at the Roku's
+    /// address has the serial number recorded at the last install, so a
+    /// different device on another network never receives the token.
+    func installOnRoku(reason: String? = nil, automatic: Bool = false) async {
         guard let serverURL, let password = rokuPassword, !rokuHost.isEmpty else {
             install = .failed("Set the Roku's address and developer password first.")
             return
@@ -190,15 +194,27 @@ final class AppModel {
             return
         }
         install = .installing
+        let installer = RokuInstaller(host: rokuHost, password: password)
+        let serial = try? await installer.serialNumber()
+        if automatic {
+            guard let serial, serial == defaults.string(forKey: "rokuSerial") else {
+                install = .failed("Did not reinstall: the device at \(rokuHost) is not the Roku you installed on. "
+                    + "Install from Settings if it is.")
+                return
+            }
+        }
         do {
             let zip = try ChannelPackage.build(channelDir: channel, url: serverURL, token: token)
-            let outcome = try await RokuInstaller(host: rokuHost, password: password).install(zip: zip)
+            let outcome = try await installer.install(zip: zip)
             let suffix = reason.map { " because \($0)" } ?? ""
             switch outcome {
             case .installed: install = .done("Installed on \(rokuHost)\(suffix).")
             case .unchanged: install = .done("Already up to date on \(rokuHost); opened it.")
-            case .failed(let message): install = .failed(message)
+            case .failed(let message):
+                install = .failed(message)
+                return
             }
+            if let serial { defaults.set(serial, forKey: "rokuSerial") }
         } catch {
             install = .failed(error.localizedDescription)
         }
@@ -226,7 +242,9 @@ final class AppModel {
     }
 
     func setRokuHost(_ value: String) {
-        rokuHost = value.trimmingCharacters(in: .whitespaces)
+        let host = value.trimmingCharacters(in: .whitespaces)
+        if host != rokuHost { defaults.removeObject(forKey: "rokuSerial") } // a new device: confirm by installing
+        rokuHost = host
         defaults.set(rokuHost, forKey: "rokuHost")
     }
 
@@ -250,7 +268,7 @@ final class AppModel {
         }
         applyAddress(force: true)
         if rokuConfigured {
-            Task { await installOnRoku(reason: "the token changed") }
+            Task { await installOnRoku(reason: "the token changed", automatic: true) }
         }
     }
 

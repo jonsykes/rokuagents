@@ -177,6 +177,8 @@ final class RokuIntegrationTests: XCTestCase {
         let zip = try ChannelPackage.build(channelDir: channel, url: server, token: token)
 
         let installer = RokuInstaller(host: host, password: password)
+        let serial = try await installer.serialNumber()
+        XCTAssertFalse(serial.isEmpty)
         let outcome = try await installer.install(zip: zip)
         XCTAssertTrue([.installed, .unchanged].contains(outcome), "\(outcome)")
 
@@ -185,5 +187,14 @@ final class RokuIntegrationTests: XCTestCase {
             XCTFail("a wrong password must fail")
         } catch RokuInstaller.Failure.wrongPassword {
         }
+    }
+}
+
+final class DeviceInfoTests: XCTestCase {
+    func testSerialNumber() {
+        let xml = "<device-info>\n\t<udn>x</udn>\n\t<serial-number>X0123456789A</serial-number>\n</device-info>"
+        XCTAssertEqual(RokuInstaller.serialNumber(inDeviceInfo: xml), "X0123456789A")
+        XCTAssertNil(RokuInstaller.serialNumber(inDeviceInfo: "<html>router login</html>"))
+        XCTAssertNil(RokuInstaller.serialNumber(inDeviceInfo: "<serial-number> </serial-number>"))
     }
 }
