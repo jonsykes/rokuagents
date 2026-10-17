@@ -20,4 +20,11 @@ and decodes only their title fields. Leave titles out with `--titles=false`.
 The traffic is plain HTTP, so anyone on your network who has the token, or can watch the traffic, can read it, and
 the titles are visible to anyone who can see the TV. `managents run` and the USB display never read titles.
 
+`serve` also answers LAN discovery requests on the UDP port with the same number, so the Roku channel can find it
+after your computer's address changes ([the exchange](http-api.md#discovery)). It answers only requests that name its
+token (by a hash of it), and the reply holds only the address to poll and a signature made with the token. No session
+data travels over UDP. Anyone who can watch your network can see the token's hash in the TV's broadcasts and your
+computer's address in the reply; neither lets them read session state without the token itself.
+`--discovery=false` turns it off.
+
 The full list of what is read and sent, how releases are built and how to report a problem: [SECURITY.md](../SECURITY.md).
