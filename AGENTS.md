@@ -41,6 +41,7 @@ display, and it works. No configuration, no Wi-Fi, no settings on the device. A 
 | `protocol/schema`, `protocol/fixtures/{valid,invalid}` | The contract: JSON Schemas and shared test lines, read by both test suites | both of the above |
 | `enclosure/managents_case.scad`, `lib/e32r40t.scad`, `stl/`, `images/` | Parametric case, board dimensions, printable STLs, renders | `make enclosure enclosure-check` |
 | `docs/` | `build.md` (what to buy, print, assemble), `install.md`, `using.md`, `privacy.md`, `architecture.md`, `protocol.md`, `hardware.md`, `troubleshooting.md`, `roadmap.md`, `adr/` (decisions), `screens/` (golden UI images) | link check, see section 4 |
+| `helper/internal/httpserve`, `helper/internal/discovery` | rokuagents: `serve`'s HTTP routes (`docs/http-api.md`) and the UDP discovery responder (`docs/http-api.md#discovery`) | `go test ./internal/httpserve ./internal/discovery` |
 | `macos/` | rokuagents menu bar app (SwiftUI): runs `serve`, follows address changes, installs the Roku channel; see `macos/README.md` | `cd macos && swift test` |
 | `install.sh` | The one-line installer, a release asset | `shellcheck install.sh` (in `make lint`) |
 | `.github/` | `workflows/ci.yml`, `workflows/release.yml`, issue and PR templates, dependabot | |
