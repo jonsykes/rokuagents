@@ -99,12 +99,22 @@ sub placeFolder()
 end sub
 
 ' The activity line sits under the headline: what Claude is doing, or what it
-' needs from you. It is hidden when the helper sends none.
+' needs from you. It takes the lines that fit above the status row (at most
+' two), and is hidden when the helper sends none or there is no room.
 sub placeActivity(activity as Dynamic)
     if activity = invalid then activity = ""
     m.activity.text = activity
-    m.activity.visible = activity <> ""
+    m.activity.visible = false
     if activity = "" then return
-    headline = m.name.boundingRect()
-    m.activity.translation = [28, m.name.translation[1] + headline.height + 10]
+    m.activity.maxLines = 1
+    lineHeight = m.activity.boundingRect().height
+    top = m.name.translation[1] + m.name.boundingRect().height + 6
+    bottom = m.top.cardHeight - 80 ' the status row starts at cardHeight - 76
+    if lineHeight <= 0 then return
+    lines = Int((bottom - top) / lineHeight)
+    if lines < 1 then return
+    if lines > 2 then lines = 2
+    m.activity.maxLines = lines
+    m.activity.translation = [28, top]
+    m.activity.visible = true
 end sub
