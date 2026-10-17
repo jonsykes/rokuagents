@@ -33,7 +33,8 @@ Claude Code ──> managents serve ──── HTTP, your LAN ────> Ro
   transcript, works out each session's status, and answers `GET /state` with JSON. Requests need a bearer token, and
   the server refuses to listen beyond localhost without one. The format is in [docs/http-api.md](docs/http-api.md).
 - **The Roku channel** in [`roku/`](roku/README.md) polls that address once a second. Your computer's address and the
-  token are built into the channel when you install it.
+  token are built into the channel when you install it. If the address changes, the channel finds the server again
+  with a broadcast on your LAN that only the server holding the same token answers.
 
 Only Claude Code sessions are shown on the TV. OpenCode and Codex appear only on the USB display.
 
@@ -42,7 +43,7 @@ Only Claude Code sessions are shown on the TV. OpenCode and Codex appear only on
 - **A Mac** with Claude Code (tested on macOS 26). Linux should work for the server but is untested.
 - **Go 1.26 or newer** to build the helper: `brew install go`.
 - **A Roku** on the same network, in developer mode (step 4 below). Tested on a TCL Roku TV with Roku OS 15.3.
-- Your computer should keep the same LAN address. A DHCP reservation in your router is the easiest way.
+- The computer and the Roku on the same network. The channel follows your computer when its LAN address changes.
 
 ## Get started
 
@@ -125,7 +126,9 @@ Then put the Roku in developer mode (step 4 below) and follow [the app's first r
    ROKU_IP=192.168.1.50 ROKU_PASS=your-dev-password ./build.sh http://192.168.1.20:8787 "$(cat ~/.config/managents/token)"
    ```
 
-   The channel opens on the TV. Run this again whenever your computer's address or the token changes.
+   The channel opens on the TV. Run this again when the token changes. When your computer's address changes, the
+   channel finds the server again by itself, but a server started with `--addr` on the old address stops: update the
+   plist, or use `--addr :8787` to listen on every interface (the token still guards it).
 
 ## Using it
 
@@ -150,7 +153,7 @@ tail -f ~/Library/Logs/managents-serve.log
 
 | What you see | Cause and fix |
 |---|---|
-| "Reconnecting..." | Your computer is asleep, the server is stopped, or the computer's address changed. Check the log; if the address changed, update the plist and rerun `build.sh`. |
+| "Reconnecting..." | Your computer is asleep or the server is stopped. Check the log. The channel finds a new address by itself while the server runs; with the plist above, an address change stops the server, so update `--addr` (or use `--addr :8787`). |
 | "The helper rejected the token" | The token in the channel differs from the server's. Rerun `build.sh` with the current token. |
 | No cards | `curl` the server as in step 2. An empty list means Claude Code has no open sessions it can see in `~/.claude/sessions`. |
 | `build.sh` fails to install | Check `ROKU_IP`, the developer password, and that the computer and the Roku are on the same network. |

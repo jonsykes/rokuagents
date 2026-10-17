@@ -29,8 +29,10 @@ Check it from another terminal:
 curl -H "Authorization: Bearer $MANAGENTS_TOKEN" http://192.168.1.20:8787/state
 ```
 
-Give your computer a reserved DHCP address in your router, or the channel will lose it when the address changes.
-On macOS the firewall may ask once whether `managents` may accept incoming connections: allow it.
+If your computer's address changes, the channel finds it again by itself (see "Finding your computer" below), as
+long as the server is still running: listen on `--addr :8787` (every interface) if the address may change, since a
+server bound to the old address stops. On macOS the firewall may ask once whether `managents` may accept incoming
+connections: allow it.
 
 ### Start it at login (macOS)
 
@@ -52,7 +54,20 @@ ROKU_IP=192.168.1.50 ROKU_PASS=your-dev-password ./build.sh http://192.168.1.20:
 Without `ROKU_IP` and `ROKU_PASS` it only builds `dist/claude-sessions.zip`, which you can upload yourself at
 `http://ROKU_IP` in a browser (user `rokudev`).
 
-The address and token are baked into the package, so rerun this whenever either changes.
+The address and token are baked into the package. Rerun this when the token changes; an address change is handled
+by the channel itself.
+
+## Finding your computer
+
+The address in `config.json` is the channel's first guess. When polls fail for 3 seconds, the channel broadcasts a
+discovery request on your network, on the same port, and the server answers with its current address
+([the exchange](../docs/http-api.md#discovery)). The channel checks that the answer is signed with its token, polls
+the new address, and saves it in the Roku's registry so the next start goes there directly. Both the request and
+the answer are tied to the token, so the server never answers someone else's channel and the channel never follows
+someone else's server. "Reconnecting..." shows while it looks, as before.
+
+This needs the computer and the Roku on the same network segment, since routers do not forward broadcasts, and a
+token of at least 32 characters (what `openssl rand -hex 16` makes).
 
 ## Using it
 
@@ -72,7 +87,7 @@ A sideloaded channel stays installed until you sideload another one or turn deve
 | Path | What it does |
 |---|---|
 | `source/main.brs` | Entry points for the channel and the screensaver |
-| `components/PollTask.*` | Background poll of `/state`; publishes frames and failure reasons |
+| `components/PollTask.*` | Background poll of `/state`; publishes frames and failure reasons; discovery and the saved address |
 | `components/SessionsScene.*` | Layout, paging, clock, connection messages, screensaver behavior |
 | `components/SessionCard.*` | One card: color, title, folder name, status and age, context bar, error blink |
 | `components/format.brs` | Status styles, age and clock formatting |
