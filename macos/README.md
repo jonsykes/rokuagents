@@ -3,6 +3,11 @@
 A Mac menu bar app that runs the session server and keeps the Roku channel pointed at it. It replaces steps 2 to 5
 of the command-line setup in the [main README](../README.md#get-started).
 
+<p align="center">
+  <img src="../docs/images/rokuagents-menu.png" alt="The rokuagents menu: the server status, a summary of 3 working, 2 need you, 1 failed and 3 idle, nine sessions with coloured dots, and the commands Set Up Roku, Restart Server, Copy Token, Open Log, Settings and Quit" width="380">
+  <img src="../docs/images/rokuagents-settings.png" alt="The rokuagents Settings window with Server, Roku and General sections" width="400">
+</p>
+
 - **Runs the server.** The app starts its own copy of `managents serve` and restarts it if it stops. Quit the app and
   the server stops.
 - **Follows your network.** When your Mac's address changes (another Wi-Fi network, Ethernet, a new DHCP lease), it
