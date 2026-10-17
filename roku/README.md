@@ -34,29 +34,8 @@ On macOS the firewall may ask once whether `managents` may accept incoming conne
 
 ### Start it at login (macOS)
 
-Save as `~/Library/LaunchAgents/com.managents.serve.plist`, fill in the path, address and token, then run
-`launchctl load ~/Library/LaunchAgents/com.managents.serve.plist`.
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>Label</key><string>com.managents.serve</string>
-  <key>ProgramArguments</key>
-  <array>
-    <string>/Users/YOU/bin/managents</string>
-    <string>serve</string>
-    <string>--addr</string><string>192.168.1.20:8787</string>
-  </array>
-  <key>EnvironmentVariables</key>
-  <dict><key>MANAGENTS_TOKEN</key><string>YOUR_TOKEN</string></dict>
-  <key>RunAtLoad</key><true/>
-  <key>KeepAlive</key><true/>
-  <key>StandardErrorPath</key><string>/tmp/managents-serve.log</string>
-</dict>
-</plist>
-```
+Use the LaunchAgent in step 3 of the [main README](../README.md#get-started). It reads the token from
+`~/.config/managents/token`, so the token is not stored in the plist.
 
 ## 2. Put the Roku in developer mode (once)
 
