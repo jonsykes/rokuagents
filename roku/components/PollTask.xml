@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Polls GET {url}/state as described in docs/http-api.md. Publishes every valid
+  frame on "frame" and a human-readable reason on "failure" when a poll fails
+  ("" after a success). Never stops on its own.
+-->
+<component name="PollTask" extends="Task">
+  <interface>
+    <field id="url" type="string" />
+    <field id="token" type="string" />
+    <field id="intervalMs" type="integer" value="1000" />
+    <field id="frame" type="assocarray" />
+    <field id="failure" type="string" />
+  </interface>
+  <script type="text/brightscript" uri="pkg:/components/PollTask.brs" />
+</component>

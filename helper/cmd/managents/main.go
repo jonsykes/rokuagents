@@ -30,6 +30,7 @@ func commands() []command {
 	return []command{
 		{"run", "stream agent status to every connected display (what the service runs)", runCommand},
 		{"status", "print the agent sessions detected on this computer", statusCommand},
+		{"serve", "serve Claude Code session state over HTTP for network displays (the Roku channel)", serveCommand},
 		{"devices", "list USB serial ports and identify managents displays", devicesCommand},
 		{"service", "run managents in the background from login: install, uninstall, start, stop, status", serviceCommand},
 		{"flash", "install the display firmware on a connected board (embedded in this program)", flashCommand},
