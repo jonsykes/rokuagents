@@ -14,12 +14,10 @@ sub layout()
     m.bg.width = w
     m.bg.height = h
     m.name.width = w - 56
-    m.status.width = w - 56
+    ' Width 0 sizes the status to its text, so placeFolder can measure it.
+    m.status.width = 0
     m.status.translation = [28, h - 76]
-    ' The folder shares the status row, right-aligned, when a title is shown.
-    m.folder.width = w - 56 - 220
     m.folder.height = 40
-    m.folder.translation = [28 + 220, h - 72]
     m.ctxTrack.width = w
     m.ctxTrack.height = 12
     m.ctxTrack.translation = [0, h - 12]
@@ -59,6 +57,7 @@ sub render()
     age = m.top.elapsed
     if a.age <> invalid then age = age + a.age
     m.status.text = style.label + "   " + formatAge(age)
+    placeFolder()
 
     opacity = 1.0
     if a.status = "idle" then opacity = 0.55
@@ -82,4 +81,17 @@ sub render()
     m.ctxTrack.visible = hasLimit
     m.ctxFill.visible = fillWidth > 0
     m.ctxFill.width = fillWidth
+end sub
+
+' The folder shares the status row, right-aligned in the space the status text
+' leaves, and is shortened with an ellipsis when it does not fit.
+sub placeFolder()
+    gap = 24
+    statusWidth = m.status.boundingRect().width
+    left = 28 + statusWidth + gap
+    space = m.top.cardWidth - 28 - left
+    if space < 0 then space = 0
+    m.folder.translation = [left, m.top.cardHeight - 72]
+    m.folder.width = space
+    m.folder.visible = space > 0
 end sub
