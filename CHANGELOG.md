@@ -9,7 +9,13 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 - **Activity lines (rokuagents).** `serve` sends a few words per Claude session (`activity`): the task-list step or
   command it is on while it works, or the question it asked or the action awaiting approval while it waits. The Roku
-  card shows it under a slightly smaller title. `serve --activity=false` and the menu app's Settings turn it off.
+  card shows it under its title, now one line. `serve --activity=false` and the menu app's Settings turn it off.
+- **LAN discovery for the Roku channel (rokuagents).** When polls fail, the channel broadcasts a request on the
+  serve port over UDP and `serve` answers with its current address, so the TV follows the computer to a new address
+  without a reinstall. Requests name the token by a hash and replies are signed with it, so the server only answers
+  its own channel and the channel only follows its own server. It needs a token of at least 32 characters. The channel saves the address it found for its next
+  start. `serve --discovery=false` turns it off; the menu bar app's reinstall on an address change is now a
+  fallback. See `docs/http-api.md#discovery`.
 - **Menu bar app (rokuagents).** `macos/` builds `rokuagents.app`, which runs `managents serve`, shows session status
   in the menu bar, installs the Roku channel from its Settings window, and restarts the server and reinstalls the
   channel when the Mac's address changes. `macos/build.sh --install` builds and installs it.

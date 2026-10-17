@@ -6,8 +6,9 @@ of the command-line setup in the [main README](../README.md#get-started).
 - **Runs the server.** The app starts its own copy of `managents serve` and restarts it if it stops. Quit the app and
   the server stops.
 - **Follows your network.** When your Mac's address changes (another Wi-Fi network, Ethernet, a new DHCP lease), it
-  restarts the server on the new address and reinstalls the channel on the Roku with that address, so the TV keeps
-  working without you doing anything.
+  restarts the server on the new address. The channel finds the server there by itself, through
+  [discovery](../docs/http-api.md#discovery), within a few seconds. As a fallback, for a channel installed before
+  discovery existed, the app also reinstalls the channel with the new address.
 - **Shows status in the menu bar.** The TV icon is crossed out while the server is down, and shows how many sessions
   need you. The menu lists the open sessions with their titles.
 - **Installs the channel.** "Install on Roku" builds the channel with the current address and token and sideloads
@@ -47,7 +48,7 @@ missing. **New Token** in Settings replaces it and reinstalls the channel.
 | Network | Automatic uses the lowest-numbered Wi-Fi or Ethernet interface with a home network address (en0 before en1), never a VPN or virtual machine bridge. Pick an interface to stay on it. |
 | Port | 8787 by default. Press Return to apply. |
 | Send session titles | Off, the TV shows folder names only (`--titles=false`). |
-| Reinstall when this Mac's address changes | On by default. Off, the TV shows "Reconnecting..." until you install again. The app only reinstalls by itself on the Roku you last installed on: it checks the device's serial number first, so on another network a different device at the same address never gets the channel or the token. |
+| Reinstall when this Mac's address changes | On by default. A fallback: a channel installed by this version finds the new address by itself, so it can be off. Off, a channel from before discovery shows "Reconnecting..." until you install again. The app only reinstalls by itself on the Roku you last installed on: it checks the device's serial number first, so on another network a different device at the same address never gets the channel or the token. |
 
 The server's log is `~/Library/Logs/rokuagents-serve.log` (menu: **Open Log**).
 
