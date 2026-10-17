@@ -1,6 +1,10 @@
 <h1 align="center">rokuagents</h1>
 
 <p align="center">
+  <img src="docs/images/rokuagents-tv.jpg" alt="A TV showing nine Claude Code session cards: three green working, two yellow needing you, one red error and three idle, each with its title and folder" width="720">
+</p>
+
+<p align="center">
   <b>Your Claude Code sessions on the TV, so you can see at a glance which one needs you.</b>
 </p>
 
