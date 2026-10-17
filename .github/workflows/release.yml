@@ -1,0 +1,48 @@
+name: Release
+
+# A v* tag builds the helper for every platform and the display firmware on a macOS runner (the
+# macOS binary needs cgo, lipo and codesign), checks the result and publishes it as a GitHub release.
+# Pushing a tag is a release: CHANGELOG.md must have a section for it.
+
+on:
+  push:
+    tags: ["v*"]
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: release
+    runs-on: macos-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    env:
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: helper/go.mod
+          cache-dependency-path: helper/go.sum
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.platformio
+          key: platformio-${{ hashFiles('firmware/platformio.ini') }}
+      - run: pip install platformio==6.2.0
+      - name: Build the assets
+        run: make check-version dist VERSION="${TAG#v}"
+      - name: Smoke-test the assets
+        run: make dist-check VERSION="${TAG#v}"
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          make -s release-notes VERSION="${TAG#v}" > "$RUNNER_TEMP/notes.md"
+          case "$TAG" in *-*) set -- --prerelease ;; *) set -- ;; esac
+          gh release create "$TAG" dist/* --verify-tag --title "$TAG" --notes-file "$RUNNER_TEMP/notes.md" "$@"

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Written by "managents service install"; remove it with "managents service uninstall". -->
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.github.tonylook.managents</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/ann/.local/bin/managents</string>
+		<string>run</string>
+		<string>--log-file</string>
+		<string>/Users/ann/Library/Logs/managents.log</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/Users/ann/Library/Logs/managents.log</string>
+</dict>
+</plist>

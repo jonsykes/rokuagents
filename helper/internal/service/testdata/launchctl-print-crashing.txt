@@ -1,0 +1,30 @@
+gui/501/com.github.tonylook.managents = {
+	active count = 0
+	path = /Users/ann/Library/LaunchAgents/com.github.tonylook.managents.plist
+	type = LaunchAgent
+	state = spawn scheduled
+
+	program = /Users/ann/.local/bin/managents
+	arguments = {
+		/Users/ann/.local/bin/managents
+		run
+		--log-file
+		/Users/ann/Library/Logs/managents.log
+	}
+
+	stderr path = /Users/ann/Library/Logs/managents.log
+	domain = gui/501 [100024]
+	minimum runtime = 10
+	exit timeout = 5
+	runs = 7
+	last exit code = 2
+
+	resource coalition = {
+		ID = 1073
+		type = resource
+		state = active
+		pid = 99
+	}
+
+	properties = keepalive | runatload | inferred program
+}

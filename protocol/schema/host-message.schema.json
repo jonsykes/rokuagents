@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tonylook/managents/protocol/schema/host-message.schema.json",
+  "title": "managents host -> device message (protocol v1)",
+  "description": "One line sent by the helper to the display. See docs/protocol.md.",
+  "oneOf": [{ "$ref": "#/$defs/state" }, { "$ref": "#/$defs/hello" }],
+  "$defs": {
+    "header": {
+      "type": "object",
+      "required": ["v", "t"],
+      "properties": {
+        "v": { "const": 1 },
+        "t": { "type": "string" }
+      }
+    },
+    "hello": {
+      "allOf": [{ "$ref": "#/$defs/header" }],
+      "properties": { "t": { "const": "hello" } }
+    },
+    "state": {
+      "allOf": [{ "$ref": "#/$defs/header" }],
+      "required": ["now", "agents"],
+      "properties": {
+        "t": { "const": "state" },
+        "now": { "type": "integer", "description": "Host UNIX time, seconds." },
+        "tz": { "type": "integer", "description": "Host UTC offset in seconds, DST applied. Default 0." },
+        "agents": {
+          "type": "array",
+          "maxItems": 24,
+          "items": { "$ref": "#/$defs/agent" }
+        },
+        "more": { "type": "integer", "minimum": 0, "description": "Agents left out of the list. Default 0." }
+      }
+    },
+    "agent": {
+      "type": "object",
+      "required": ["id", "kind", "name", "status", "age"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 48,
+          "description": "<kind>:<pid or session id>, stable for the session; the display keeps 48 bytes."
+        },
+        "kind": { "type": "string", "description": "claude | opencode | codex; other values render a generic logo." },
+        "name": { "type": "string", "description": "Display name, already disambiguated by the helper." },
+        "path": {
+          "type": "string",
+          "description": "Reserved. Was the working directory; no longer sent, and ignored by the display."
+        },
+        "status": { "enum": ["working", "waiting", "error", "idle"] },
+        "age": { "type": "integer", "minimum": 0, "description": "Seconds since the status last changed." },
+        "ctx": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "required": ["used"],
+              "properties": {
+                "used": { "type": "integer", "minimum": 0 },
+                "limit": { "oneOf": [{ "type": "null" }, { "type": "integer", "minimum": 1 }] }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

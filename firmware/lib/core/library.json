@@ -1,0 +1,14 @@
+{
+  "name": "managents-core",
+  "description": "Hardware-independent core of the managents display firmware: protocol, layout and scene model.",
+  "license": "MIT",
+  "frameworks": "*",
+  "platforms": "*",
+  "dependencies": {
+    "bblanchon/ArduinoJson": "7.3.2"
+  },
+  "build": {
+    "srcDir": "src",
+    "includeDir": "src"
+  }
+}

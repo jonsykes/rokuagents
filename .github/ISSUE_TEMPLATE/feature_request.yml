@@ -1,0 +1,15 @@
+name: Feature request
+description: Suggest an idea or a new agent to support
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What would this make easier? Check docs/roadmap.md first, it may already be planned.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Proposal

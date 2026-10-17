@@ -1,0 +1,42 @@
+gui/501/com.github.tonylook.managents = {
+	active count = 1
+	path = /Users/ann/Library/LaunchAgents/com.github.tonylook.managents.plist
+	type = LaunchAgent
+	state = running
+
+	program = /Users/ann/.local/bin/managents
+	arguments = {
+		/Users/ann/.local/bin/managents
+		run
+		--log-file
+		/Users/ann/Library/Logs/managents.log
+	}
+
+	stderr path = /Users/ann/Library/Logs/managents.log
+	default environment = {
+		PATH => /usr/bin:/bin:/usr/sbin:/sbin
+	}
+
+	domain = gui/501 [100024]
+	asid = 100024
+	minimum runtime = 10
+	exit timeout = 5
+	runs = 1
+	pid = 4242
+	immediate reason = speculative
+	forks = 0
+	execs = 1
+	initialized = 1
+	last exit code = (never exited)
+
+	resource coalition = {
+		ID = 1073
+		type = resource
+		state = active
+		active count = 1
+		name = com.github.tonylook.managents
+	}
+
+	spawn type = daemon (3)
+	properties = keepalive | runatload | inferred program
+}

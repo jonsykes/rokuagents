@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tonylook/managents/protocol/schema/device-message.schema.json",
+  "title": "managents device -> host message (protocol v1)",
+  "description": "One line sent by the display to the helper. See docs/protocol.md.",
+  "type": "object",
+  "required": ["v", "t", "device", "fw", "w", "h", "proto"],
+  "properties": {
+    "v": { "const": 1 },
+    "t": { "const": "hello" },
+    "device": { "const": "managents" },
+    "fw": { "type": "string", "description": "Firmware version (semver)." },
+    "board": { "type": "string", "description": "Board identifier, e.g. e32r40t." },
+    "w": { "type": "integer", "minimum": 1, "description": "Screen width in the current rotation." },
+    "h": { "type": "integer", "minimum": 1, "description": "Screen height in the current rotation." },
+    "proto": { "type": "integer", "minimum": 1, "description": "Highest protocol version the device speaks." }
+  }
+}

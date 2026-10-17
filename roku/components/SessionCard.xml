@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  One session. Set cardWidth and cardHeight first, then agent (one entry of a
+  state frame's "agents"), elapsed (seconds since that frame arrived) and
+  blinkOn (toggled by the scene twice a second for fresh errors).
+-->
+<component name="SessionCard" extends="Group">
+  <interface>
+    <field id="cardWidth" type="integer" value="560" onChange="layout" />
+    <field id="cardHeight" type="integer" value="250" onChange="layout" />
+    <field id="agent" type="assocarray" onChange="render" />
+    <field id="elapsed" type="integer" value="0" onChange="render" />
+    <field id="blinkOn" type="boolean" value="true" onChange="render" />
+  </interface>
+  <script type="text/brightscript" uri="pkg:/components/SessionCard.brs" />
+  <script type="text/brightscript" uri="pkg:/components/format.brs" />
+  <children>
+    <Rectangle id="bg" />
+    <Label id="name" font="font:LargeBoldSystemFont" wrap="true" maxLines="2" translation="[28,26]" />
+    <Label id="status" font="font:MediumSystemFont" />
+    <Label id="folder" font="font:SmallSystemFont" horizAlign="right" vertAlign="center" />
+    <Rectangle id="ctxTrack" color="0x00000055" />
+    <Rectangle id="ctxFill" color="0xFFFFFFAA" />
+  </children>
+</component>

@@ -1,0 +1,4 @@
+# Release builds copy the firmware here (see README.md); they are not committed.
+*
+!.gitignore
+!README.md

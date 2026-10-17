@@ -1,0 +1,45 @@
+name: Bug report
+description: Something does not work as described
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what you saw. A photo of the display helps.
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Version
+      description: "Output of `managents version`. The display's firmware is in the log line `display connected ... firmware=...` (see below)."
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Computer
+      options: [macOS, Linux, Windows]
+    validations:
+      required: true
+  - type: textarea
+    id: service
+    attributes:
+      label: Service status
+      description: "Output of `managents service status`. It shows whether the helper runs, its warnings and the latest log lines. `managents devices` cannot open a port the service holds, so it is not needed here."
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: "The last lines of the log: `tail -n 100 ~/Library/Logs/managents.log` on macOS, `journalctl --user -u managents -n 100` on Linux."
+      render: text
+  - type: textarea
+    id: status
+    attributes:
+      label: Detected sessions
+      description: "Output of `managents status`. It lists the working directory of each session, so redact any you prefer not to share. `managents status --json` has no paths."
+      render: text

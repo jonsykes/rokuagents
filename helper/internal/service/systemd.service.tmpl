@@ -1,0 +1,12 @@
+# Written by "managents service install"; remove it with "managents service uninstall".
+[Unit]
+Description=managents: AI agent status on a USB display
+Documentation=https://github.com/tonylook/managents
+
+[Service]
+ExecStart={{execStart .Program}}
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

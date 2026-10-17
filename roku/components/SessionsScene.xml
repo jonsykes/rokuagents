@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  The whole screen: a header (title, counts, clock, page) and nine cards per
+  page, fed by PollTask. Reads pkg:/config.json ({"url": ..., "token": ...}),
+  which build.sh writes. Set "screensaver" to true when run as a screensaver:
+  pages then turn by themselves and the layout drifts slightly against burn-in.
+-->
+<component name="SessionsScene" extends="Scene">
+  <interface>
+    <field id="screensaver" type="boolean" value="false" onChange="onScreensaverChanged" />
+  </interface>
+  <script type="text/brightscript" uri="pkg:/components/SessionsScene.brs" />
+  <script type="text/brightscript" uri="pkg:/components/format.brs" />
+  <children>
+    <Rectangle id="background" width="1920" height="1080" color="0x111417FF" />
+    <Group id="root">
+      <Label id="title" text="Claude sessions" translation="[96,54]" font="font:LargeBoldSystemFont" color="0xECEFF1FF" />
+      <Label id="summary" translation="[96,106]" width="1100" font="font:SmallSystemFont" color="0x90A4AEFF" />
+      <Label id="clock" translation="[1324,54]" width="500" horizAlign="right" font="font:LargeBoldSystemFont" color="0xECEFF1FF" />
+      <Label id="pageInfo" translation="[1324,106]" width="500" horizAlign="right" font="font:SmallSystemFont" color="0x90A4AEFF" />
+      <Group id="grid" translation="[96,170]" />
+      <Label id="message" translation="[160,470]" width="1600" height="140" wrap="true" horizAlign="center" vertAlign="center" font="font:LargeSystemFont" color="0xCFD8DCFF" visible="false" />
+    </Group>
+  </children>
+</component>

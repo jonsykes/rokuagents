@@ -1,0 +1,1 @@
+{"v":1,"t":"state","now":1791560000,"tz":7200,"agents":[{"id":"claude:48211","kind":"claude","name":"managents","path":"/Users/ann/managents","status":"working","age":42,"ctx":{"used":88000,"limit":200000}}]}

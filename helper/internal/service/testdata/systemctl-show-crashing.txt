@@ -1,0 +1,6 @@
+LoadState=loaded
+ActiveState=activating
+MainPID=0
+ExecMainStatus=1
+ExecMainExitTimestamp=Fri 2026-10-09 10:00:05 CEST
+ExecStart={ path=/home/ann/.local/bin/managents ; argv[]=/home/ann/.local/bin/managents run ; ignore_errors=no ; start_time=[Fri 2026-10-09 10:00:00 CEST] ; stop_time=[Fri 2026-10-09 10:00:05 CEST] ; pid=4242 ; code=exited ; status=1 }

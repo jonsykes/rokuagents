@@ -1,0 +1,14 @@
+# Build outputs
+/bin/
+/dist/
+firmware/.pio/
+firmware/.vscode/
+
+# Editors and OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Firmware image copied in for the helper to embed (see make helper)
+/helper/internal/firmware/images/managents-firmware-*
