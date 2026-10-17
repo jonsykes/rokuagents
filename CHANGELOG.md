@@ -7,6 +7,11 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **`managents serve` and a Roku channel (rokuagents).** `serve` publishes Claude Code session state over HTTP with a
+  bearer token (`docs/http-api.md`); `roku/` is a channel and screensaver that shows it on a TV, and `roku/build.sh`
+  builds and sideloads it.
+- **Session titles on the Roku (rokuagents).** `serve` sends each Claude session's title as the Claude app shows it,
+  and the Roku card uses it as its headline with the folder name beside the status. `--titles=false` turns it off.
 - **Codex CLI.** Every open `codex` session is a card with its status and context bar. Working and the end of a turn
   come from the thread's log, an error from a turn that failed, and an approval prompt from a tool call that waits
   with no command of the turn running (Codex does not record its prompts). `codex exec` runs, the background app server, and

@@ -14,6 +14,12 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license"></a>
 </p>
 
+> **rokuagents** is a fork of [tonylook/managents](https://github.com/tonylook/managents) by Antonio Alvino. It adds
+> `managents serve`, which publishes Claude Code session state over HTTP on your network, and a Roku channel and
+> screensaver in [`roku/`](roku/README.md) that shows it on a TV, with each session's title from the Claude app.
+> Everything else, including the USB display, works as upstream. Unlike upstream, `serve` uses the network and sends
+> session titles, which come from your conversations: see [Privacy](docs/privacy.md#network-displays-rokuagents).
+
 One card per open [Claude Code](https://claude.com/claude-code), [OpenCode](https://opencode.ai) or
 [Codex](https://developers.openai.com/codex/cli) session: green while it works, yellow when it waits for you, red
 when it failed, dark when it has been idle for hours. Plug it in and stop alt-tabbing to check whether an agent needs

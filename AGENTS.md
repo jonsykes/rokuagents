@@ -228,7 +228,10 @@ Never open the serial port yourself to "test", never delete `~/Library/Logs/mana
   presence of a turn error and token counts (**never add a content field to the rollout `entry` type**); process
   name, parent, cwd, start time.
 - Send only protocol fields over USB: id, kind, folder name, status, age, context used and limit. No directory paths.
-- No network calls and no telemetry. `net/http` is not linked; keep it that way. The display has no radio.
+- No network calls and no telemetry. The display has no radio. **Fork exception (rokuagents):** `managents serve`
+  links `net/http` and, with `--titles` (its default), sends Claude session titles (`custom-title`, else `ai-title`)
+  read by `detect/claude/title.go`. Titles are opt-in on the detector (`Source.Titles`) and `run` never sets it; keep
+  it that way. See [docs/privacy.md](docs/privacy.md#network-displays-rokuagents).
 - Canary tests (`TestConversationContentNeverLeaks`) enforce it; extend them, never weaken them.
 - **Synthetic names only** in fixtures, screens, demos, docs and tests (`payments-api`, `website`, `infra-terraform`,
   home `/Users/ann`). Never a real project, customer or employer name, and never real session content.
