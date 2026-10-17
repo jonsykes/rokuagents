@@ -41,6 +41,7 @@ display, and it works. No configuration, no Wi-Fi, no settings on the device. A 
 | `protocol/schema`, `protocol/fixtures/{valid,invalid}` | The contract: JSON Schemas and shared test lines, read by both test suites | both of the above |
 | `enclosure/managents_case.scad`, `lib/e32r40t.scad`, `stl/`, `images/` | Parametric case, board dimensions, printable STLs, renders | `make enclosure enclosure-check` |
 | `docs/` | `build.md` (what to buy, print, assemble), `install.md`, `using.md`, `privacy.md`, `architecture.md`, `protocol.md`, `hardware.md`, `troubleshooting.md`, `roadmap.md`, `adr/` (decisions), `screens/` (golden UI images) | link check, see section 4 |
+| `helper/internal/httpserve`, `helper/internal/discovery` | rokuagents: `serve`'s HTTP routes (`docs/http-api.md`) and the UDP discovery responder (`docs/http-api.md#discovery`) | `go test ./internal/httpserve ./internal/discovery` |
 | `macos/` | rokuagents menu bar app (SwiftUI): runs `serve`, follows address changes, installs the Roku channel; see `macos/README.md` | `cd macos && swift test` |
 | `install.sh` | The one-line installer, a release asset | `shellcheck install.sh` (in `make lint`) |
 | `.github/` | `workflows/ci.yml`, `workflows/release.yml`, issue and PR templates, dependabot | |
@@ -232,7 +233,8 @@ Never open the serial port yourself to "test", never delete `~/Library/Logs/mana
 - No network calls and no telemetry. The display has no radio. **Fork exception (rokuagents):** `managents serve`
   links `net/http` and, with `--titles` (its default), sends Claude session titles (`custom-title`, else `ai-title`)
   read by `detect/claude/title.go`. Titles are opt-in on the detector (`Source.Titles`) and `run` never sets it; keep
-  it that way. See [docs/privacy.md](docs/privacy.md#network-displays-rokuagents).
+  it that way. `serve` also answers token-gated UDP discovery (`internal/discovery`, `--discovery`): replies carry
+  only the base url and an HMAC, never session data. See [docs/privacy.md](docs/privacy.md#network-displays-rokuagents).
 - Canary tests (`TestConversationContentNeverLeaks`) enforce it; extend them, never weaken them.
 - **Synthetic names only** in fixtures, screens, demos, docs and tests (`payments-api`, `website`, `infra-terraform`,
   home `/Users/ann`). Never a real project, customer or employer name, and never real session content.
