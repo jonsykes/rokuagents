@@ -7,6 +7,9 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Menu bar app (rokuagents).** `macos/` builds `rokuagents.app`, which runs `managents serve`, shows session status
+  in the menu bar, installs the Roku channel from its Settings window, and restarts the server and reinstalls the
+  channel when the Mac's address changes. `macos/build.sh --install` builds and installs it.
 - **`managents serve` and a Roku channel (rokuagents).** `serve` publishes Claude Code session state over HTTP with a
   bearer token (`docs/http-api.md`); `roku/` is a channel and screensaver that shows it on a TV, and `roku/build.sh`
   builds and sideloads it.

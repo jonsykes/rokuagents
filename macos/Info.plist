@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleIdentifier</key><string>io.github.jonsykes.rokuagents</string>
+  <key>CFBundleName</key><string>rokuagents</string>
+  <key>CFBundleDisplayName</key><string>rokuagents</string>
+  <key>CFBundleExecutable</key><string>RokuAgents</string>
+  <key>CFBundlePackageType</key><string>APPL</string>
+  <key>CFBundleShortVersionString</key><string>SHORT_VERSION</string>
+  <key>CFBundleVersion</key><string>BUILD_VERSION</string>
+  <key>LSMinimumSystemVersion</key><string>15.0</string>
+  <key>LSUIElement</key><true/>
+  <key>NSHumanReadableCopyright</key><string>MIT license. Based on managents by Antonio Alvino.</string>
+  <key>NSLocalNetworkUsageDescription</key>
+  <string>rokuagents reads session status from its server on your network and installs the channel on your Roku.</string>
+  <key>NSAppTransportSecurity</key>
+  <dict><key>NSAllowsLocalNetworking</key><true/></dict>
+</dict>
+</plist>

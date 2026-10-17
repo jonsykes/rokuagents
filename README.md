@@ -46,6 +46,19 @@ Only Claude Code sessions are shown on the TV. OpenCode and Codex appear only on
 
 ## Get started
 
+**The easy way: the menu bar app.** It runs the server, installs the channel on the Roku from its Settings window,
+and reinstalls it by itself when your Mac's address changes. Build and open it with:
+
+```sh
+git clone https://github.com/jonsykes/rokuagents.git
+cd rokuagents/macos
+./build.sh --install
+```
+
+Then put the Roku in developer mode (step 4 below) and follow [the app's first run](macos/README.md#first-run).
+
+**Or set it up from the command line:**
+
 1. **Build the helper.**
 
    ```sh
@@ -157,6 +170,7 @@ include `serve`; build from this repository to get both.
 
 | | |
 |---|---|
+| [Menu bar app](macos/README.md) | Settings, first run, how the app is built |
 | [Roku channel](roku/README.md) | The channel's files and how it polls |
 | [HTTP API](docs/http-api.md) | What `serve` answers, for building another display |
 | [Privacy](docs/privacy.md) | What the helper reads and what it sends |
