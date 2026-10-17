@@ -84,7 +84,7 @@ jobs:
         run: pio test -e native
       - name: build e32r40t
         run: pio run -e e32r40t
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: firmware-e32r40t
           path: |
@@ -101,7 +101,7 @@ jobs:
             echo "::error::The rendered screens changed: run 'make screens' and commit docs/screens"
             exit 1
           fi
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: screens
@@ -124,7 +124,7 @@ jobs:
       - uses: actions/checkout@v7
       - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends openscad
       - run: make enclosure enclosure-check
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: enclosure-stl
           path: enclosure/stl/*.stl
