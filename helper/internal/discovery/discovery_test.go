@@ -36,6 +36,24 @@ func TestTokenIDAndSignMatchKnownVectors(t *testing.T) {
 	}
 }
 
+func TestTokenStrongEnough(t *testing.T) {
+	tests := []struct {
+		token string
+		want  bool
+	}{
+		{"", false},
+		{"hunter2", false},
+		{testToken[:31], false},
+		{testToken, true},
+		{testToken + testToken, true},
+	}
+	for _, tt := range tests {
+		if got := TokenStrongEnough(tt.token); got != tt.want {
+			t.Errorf("TokenStrongEnough(%d chars) = %v, want %v", len(tt.token), got, tt.want)
+		}
+	}
+}
+
 // fakeClock is a settable clock for the rate limit.
 type fakeClock struct{ now time.Time }
 

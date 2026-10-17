@@ -50,7 +50,9 @@ Responses carry `Cache-Control: no-store`.
 
 A display that cannot reach the helper at its configured address can find it on the LAN. The helper listens for UDP
 on the port with the same number as its HTTP port (8787 by default), on every interface, so it receives broadcasts.
-`--discovery=false` turns this off; without a token it is always off.
+`--discovery=false` turns this off. It is always off without a token or with a token shorter than 32 characters,
+because every device on the network sees the token's id, and a reply is keyed with the token: both would let someone
+test guesses at a short token offline. `openssl rand -hex 16` and the menu bar app make 32-character random tokens.
 
 The exchange is one datagram each way, plain ASCII, fields separated by single spaces.
 

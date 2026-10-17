@@ -10,7 +10,7 @@ and the project uses [Semantic Versioning](https://semver.org/).
 - **LAN discovery for the Roku channel (rokuagents).** When polls fail, the channel broadcasts a request on the
   serve port over UDP and `serve` answers with its current address, so the TV follows the computer to a new address
   without a reinstall. Requests name the token by a hash and replies are signed with it, so the server only answers
-  its own channel and the channel only follows its own server. The channel saves the address it found for its next
+  its own channel and the channel only follows its own server. It needs a token of at least 32 characters. The channel saves the address it found for its next
   start. `serve --discovery=false` turns it off; the menu bar app's reinstall on an address change is now a
   fallback. See `docs/http-api.md#discovery`.
 - **Menu bar app (rokuagents).** `macos/` builds `rokuagents.app`, which runs `managents serve`, shows session status

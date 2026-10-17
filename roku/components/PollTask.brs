@@ -76,9 +76,11 @@ end function
 ' --- discovery (docs/http-api.md#discovery) ---------------------------------
 
 ' Discovery runs after 3 seconds without a good answer, at most every 5
-' seconds, and only with a token: the token is what proves a reply genuine.
+' seconds, and only with a token of 32 characters or more: the token is what
+' proves a reply genuine, and a short one could be guessed from its id in the
+' broadcast. The helper applies the same rule.
 function shouldDiscover() as Boolean
-    if m.top.token = "" then return false
+    if Len(m.top.token) < 32 then return false
     if m.sinceSuccess.TotalMilliseconds() < 3000 then return false
     return m.sinceDiscovery = invalid or m.sinceDiscovery.TotalMilliseconds() >= 5000
 end function

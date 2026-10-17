@@ -66,7 +66,8 @@ the new address, and saves it in the Roku's registry so the next start goes ther
 the answer are tied to the token, so the server never answers someone else's channel and the channel never follows
 someone else's server. "Reconnecting..." shows while it looks, as before.
 
-This needs the computer and the Roku on the same network segment, since routers do not forward broadcasts.
+This needs the computer and the Roku on the same network segment, since routers do not forward broadcasts, and a
+token of at least 32 characters (what `openssl rand -hex 16` makes).
 
 ## Using it
 

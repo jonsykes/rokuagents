@@ -48,7 +48,20 @@ const (
 	// requests (a display sends to more than one broadcast address) or a
 	// flood cannot turn it into a noisy sender.
 	RepliesPerSecond = 10
+	// MinTokenLength is the shortest token discovery runs with. Every LAN
+	// member sees the token id in the display's broadcasts, and a reply is
+	// keyed with the token too, so both are offline guessing oracles for a
+	// weak token. 32 characters is what `openssl rand -hex 16` and the menu
+	// bar app produce: 128 random bits, far beyond guessing.
+	MinTokenLength = 32
 )
+
+// TokenStrongEnough reports whether token is long enough to expose its id
+// and signatures on the LAN. It checks length only; the docs say to generate
+// the token at random.
+func TokenStrongEnough(token string) bool {
+	return len(token) >= MinTokenLength
+}
 
 // TokenID is the public name of a token in discovery requests: the first 16
 // hex characters of its SHA-256. It identifies the token without revealing it.

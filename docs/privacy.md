@@ -24,7 +24,8 @@ the titles are visible to anyone who can see the TV. `managents run` and the USB
 after your computer's address changes ([the exchange](http-api.md#discovery)). It answers only requests that name its
 token (by a hash of it), and the reply holds only the address to poll and a signature made with the token. No session
 data travels over UDP. Anyone who can watch your network can see the token's hash in the TV's broadcasts and your
-computer's address in the reply; neither lets them read session state without the token itself.
-`--discovery=false` turns it off.
+computer's address in the reply. For a random 32-character token, as the setup makes, neither helps them guess the
+token, so they cannot read session state. With a shorter token, discovery stays off on both ends, since the hash
+would let them test guesses offline. `--discovery=false` turns it off.
 
 The full list of what is read and sent, how releases are built and how to report a problem: [SECURITY.md](../SECURITY.md).

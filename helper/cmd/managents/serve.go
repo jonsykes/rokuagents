@@ -62,7 +62,11 @@ func serveCommand(ctx context.Context, inv *invocation) error {
 
 	runCtx, stopRunner := context.WithCancel(ctx)
 	defer stopRunner()
-	if *discover && token != "" {
+	switch {
+	case !*discover || token == "":
+	case !discovery.TokenStrongEnough(token):
+		logger.Warn("LAN discovery is off: the token is shorter than 32 characters; make one with openssl rand -hex 16")
+	default:
 		startDiscovery(runCtx, token, listener.Addr(), logger)
 	}
 	runnerDone := make(chan error, 1)
