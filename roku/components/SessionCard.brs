@@ -1,6 +1,7 @@
 sub init()
     m.bg = m.top.findNode("bg")
     m.name = m.top.findNode("name")
+    m.activity = m.top.findNode("activity")
     m.status = m.top.findNode("status")
     m.folder = m.top.findNode("folder")
     m.ctxTrack = m.top.findNode("ctxTrack")
@@ -14,6 +15,7 @@ sub layout()
     m.bg.width = w
     m.bg.height = h
     m.name.width = w - 56
+    m.activity.width = w - 56
     ' Width 0 sizes the status to its text, so placeFolder can measure it.
     m.status.width = 0
     m.status.translation = [28, h - 76]
@@ -33,6 +35,7 @@ sub render()
     style = statusStyle(a.status)
     m.bg.color = style.bg
     m.name.color = style.fg
+    m.activity.color = style.fg
     m.status.color = style.fg
     m.folder.color = style.fg
 
@@ -43,16 +46,15 @@ sub render()
     title = a.title
     if title = invalid then title = ""
     if title <> ""
-        m.name.font = "font:MediumBoldSystemFont"
-        m.name.maxLines = 3
+        m.name.font = "font:SmallBoldSystemFont"
         m.name.text = title
         m.folder.text = name
     else
-        m.name.font = "font:LargeBoldSystemFont"
-        m.name.maxLines = 2
+        m.name.font = "font:MediumBoldSystemFont"
         m.name.text = name
         m.folder.text = ""
     end if
+    placeActivity(a.activity)
 
     age = m.top.elapsed
     if a.age <> invalid then age = age + a.age
@@ -94,4 +96,15 @@ sub placeFolder()
     m.folder.translation = [left, m.top.cardHeight - 72]
     m.folder.width = space
     m.folder.visible = space > 0
+end sub
+
+' The activity line sits under the headline: what Claude is doing, or what it
+' needs from you. It is hidden when the helper sends none.
+sub placeActivity(activity as Dynamic)
+    if activity = invalid then activity = ""
+    m.activity.text = activity
+    m.activity.visible = activity <> ""
+    if activity = "" then return
+    headline = m.name.boundingRect()
+    m.activity.translation = [28, m.name.translation[1] + headline.height + 10]
 end sub

@@ -231,8 +231,10 @@ Never open the serial port yourself to "test", never delete `~/Library/Logs/mana
 - Send only protocol fields over USB: id, kind, folder name, status, age, context used and limit. No directory paths.
 - No network calls and no telemetry. The display has no radio. **Fork exception (rokuagents):** `managents serve`
   links `net/http` and, with `--titles` (its default), sends Claude session titles (`custom-title`, else `ai-title`)
-  read by `detect/claude/title.go`. Titles are opt-in on the detector (`Source.Titles`) and `run` never sets it; keep
-  it that way. See [docs/privacy.md](docs/privacy.md#network-displays-rokuagents).
+  read by `detect/claude/title.go`, and with `--activity` (its default) an activity line read by
+  `detect/claude/activity.go`, which decodes reply text and a few tool-input fields (never prompts, commands or tool
+  output) into its own `activityEntry` type. Both are opt-in on the detector (`Source.Titles`, `Source.Activity`) and
+  `run` never sets them; keep it that way. See [docs/privacy.md](docs/privacy.md#network-displays-rokuagents).
 - Canary tests (`TestConversationContentNeverLeaks`) enforce it; extend them, never weaken them.
 - **Synthetic names only** in fixtures, screens, demos, docs and tests (`payments-api`, `website`, `infra-terraform`,
   home `/Users/ann`). Never a real project, customer or employer name, and never real session content.

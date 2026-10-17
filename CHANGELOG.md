@@ -7,6 +7,9 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Activity lines (rokuagents).** `serve` sends a few words per Claude session (`activity`): the task-list step or
+  command it is on while it works, or the question it asked or the action awaiting approval while it waits. The Roku
+  card shows it under a slightly smaller title. `serve --activity=false` and the menu app's Settings turn it off.
 - **Menu bar app (rokuagents).** `macos/` builds `rokuagents.app`, which runs `managents serve`, shows session status
   in the menu bar, installs the Roku channel from its Settings window, and restarts the server and reinstalls the
   channel when the Mac's address changes. `macos/build.sh --install` builds and installs it.

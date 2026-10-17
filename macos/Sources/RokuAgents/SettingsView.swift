@@ -40,6 +40,11 @@ struct SettingsView: View {
                 Toggle("Send session titles", isOn: Binding(get: { model.titles }, set: { model.setTitles($0) }))
                 Text("Titles are the ones the Claude app shows. Off, the TV shows folder names only.")
                     .font(.caption).foregroundStyle(.secondary)
+                Toggle("Send what sessions are doing", isOn: Binding(
+                    get: { model.activity }, set: { model.setActivity($0) }))
+                Text("A line under each title: the step or command a session is on, or the question it is waiting "
+                    + "on you for. It comes from the conversation.")
+                    .font(.caption).foregroundStyle(.secondary)
                 LabeledContent("Token") {
                     HStack {
                         Text(showToken ? model.token : String(repeating: "•", count: 12))

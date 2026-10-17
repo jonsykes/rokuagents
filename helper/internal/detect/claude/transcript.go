@@ -22,6 +22,7 @@ var errNoEntries = errors.New("transcript has no readable entries")
 type transcriptSummary struct {
 	endsInError bool
 	context     *agent.ContextUsage
+	tail        []byte // the end of the transcript that was read, for activity.go
 }
 
 // entry declares only the metadata fields we use. Message content is never
@@ -66,6 +67,7 @@ func summarizeTranscript(path string) (transcriptSummary, error) {
 		}
 		summary, err := summarize(tail)
 		if (err == nil && summary.context != nil) || whole || size >= maxTranscriptTail {
+			summary.tail = tail
 			return summary, err
 		}
 	}

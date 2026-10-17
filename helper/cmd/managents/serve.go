@@ -25,6 +25,8 @@ func serveCommand(ctx context.Context, inv *invocation) error {
 	claudeWindow := claudeContextFlag(flags)
 	titles := flags.Bool("titles", true,
 		"send each session's title (as the Claude app shows it) along with its folder name")
+	activity := flags.Bool("activity", true,
+		"send a few words on what each session is doing, or what it needs from you while it waits")
 	if err := inv.parse(flags); err != nil {
 		return err
 	}
@@ -45,6 +47,7 @@ func serveCommand(ctx context.Context, inv *invocation) error {
 	claudeSource := claude.NewSource(home, process.System{})
 	claudeSource.ContextWindow = *claudeWindow
 	claudeSource.Titles = *titles
+	claudeSource.Activity = *activity
 	server := httpserve.New(token)
 
 	listener, err := net.Listen("tcp", *addr)

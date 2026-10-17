@@ -23,6 +23,7 @@ final class AppModel {
     private(set) var port: Int
     private(set) var pinnedInterface: String? // nil: automatic
     private(set) var titles: Bool
+    private(set) var activity: Bool
     private(set) var rokuHost: String
     private(set) var autoReinstall: Bool
 
@@ -51,10 +52,11 @@ final class AppModel {
         .appendingPathComponent("Library/Logs/rokuagents-serve.log")
 
     private init() {
-        defaults.register(defaults: ["port": 8787, "titles": true, "autoReinstall": true])
+        defaults.register(defaults: ["port": 8787, "titles": true, "activity": true, "autoReinstall": true])
         port = defaults.integer(forKey: "port")
         pinnedInterface = defaults.string(forKey: "pinnedInterface")
         titles = defaults.bool(forKey: "titles")
+        activity = defaults.bool(forKey: "activity")
         rokuHost = defaults.string(forKey: "rokuHost") ?? ""
         autoReinstall = defaults.bool(forKey: "autoReinstall")
 
@@ -134,7 +136,7 @@ final class AppModel {
         }
         let next = "\(chosen.ipv4):\(port)"
         address = next
-        server.start(.init(address: next, token: token, titles: titles), force: force)
+        server.start(.init(address: next, token: token, titles: titles, activity: activity), force: force)
         if let previous, previous != next, autoReinstall, rokuConfigured {
             Task {
                 try? await Task.sleep(for: .seconds(2))
@@ -232,6 +234,12 @@ final class AppModel {
     func setPinnedInterface(_ name: String?) {
         pinnedInterface = name
         defaults.set(name, forKey: "pinnedInterface")
+        applyAddress()
+    }
+
+    func setActivity(_ value: Bool) {
+        activity = value
+        defaults.set(value, forKey: "activity")
         applyAddress()
     }
 

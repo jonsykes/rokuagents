@@ -58,6 +58,8 @@ The address and token are baked into the package, so rerun this whenever either 
 
 - Each card's headline is the session's title from the Claude app, with the folder name beside the status. Sessions
   without a title show the folder name instead.
+- Under the headline, a line says what Claude is doing while it works (the step or command it is on), or what it
+  needs while it waits: the question it asked, or the action it wants you to approve.
 - Nine sessions per page. Left/right or up/down turn pages; after 30 seconds it returns to the first page.
 - The header shows counts, your computer's clock, and `+N more` beyond 24 sessions.
 - The bar along the bottom of a card is context-window usage, shown only when the limit is known.
@@ -74,6 +76,6 @@ A sideloaded channel stays installed until you sideload another one or turn deve
 | `source/main.brs` | Entry points for the channel and the screensaver |
 | `components/PollTask.*` | Background poll of `/state`; publishes frames and failure reasons |
 | `components/SessionsScene.*` | Layout, paging, clock, connection messages, screensaver behavior |
-| `components/SessionCard.*` | One card: color, title, folder name, status and age, context bar, error blink |
+| `components/SessionCard.*` | One card: color, title, activity line, folder name, status and age, context bar, error blink |
 | `components/format.brs` | Status styles, age and clock formatting |
 | `build.sh` | Writes `config.json`, zips, optionally sideloads |

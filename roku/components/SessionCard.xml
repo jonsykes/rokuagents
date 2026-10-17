@@ -16,7 +16,8 @@
   <script type="text/brightscript" uri="pkg:/components/format.brs" />
   <children>
     <Rectangle id="bg" />
-    <Label id="name" font="font:LargeBoldSystemFont" wrap="true" maxLines="2" translation="[28,26]" />
+    <Label id="name" font="font:MediumBoldSystemFont" wrap="true" maxLines="2" translation="[28,22]" />
+    <Label id="activity" font="font:SmallSystemFont" wrap="true" maxLines="2" opacity="0.85" />
     <Label id="status" font="font:MediumSystemFont" />
     <Label id="folder" font="font:SmallSystemFont" horizAlign="right" vertAlign="center" />
     <Rectangle id="ctxTrack" color="0x00000055" />

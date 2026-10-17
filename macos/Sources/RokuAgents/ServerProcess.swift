@@ -15,6 +15,7 @@ final class ServerProcess {
         var address: String
         var token: String
         var titles: Bool
+        var activity: Bool
     }
 
     private(set) var state: State = .stopped
@@ -60,7 +61,8 @@ final class ServerProcess {
 
         let server = Process()
         server.executableURL = binary
-        server.arguments = ["serve", "--addr", options.address, "--titles=\(options.titles)"]
+        server.arguments = ["serve", "--addr", options.address, "--titles=\(options.titles)",
+                            "--activity=\(options.activity)"]
         var environment = ProcessInfo.processInfo.environment
         environment["MANAGENTS_TOKEN"] = options.token
         server.environment = environment
