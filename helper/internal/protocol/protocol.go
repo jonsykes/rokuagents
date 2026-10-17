@@ -52,6 +52,9 @@ type AgentEntry struct {
 	Status string   `json:"status"`
 	Age    int64    `json:"age"`
 	Ctx    *Context `json:"ctx,omitempty"`
+	// Title is set only for network displays that asked for titles; the
+	// display falls back to Name without it.
+	Title string `json:"title,omitempty"`
 }
 
 // Context is a session's context-window usage. Limit is null when unknown.
@@ -85,6 +88,10 @@ func NewState(cards []agent.Card, now time.Time) State {
 		}
 		state.Agents = append(state.Agents, entryFor(card, now))
 	}
+	// Titles are optional, so they go before cards do, least active first.
+	for i := len(state.Agents) - 1; i >= 0 && !fitsOneLine(state); i-- {
+		state.Agents[i].Title = ""
+	}
 	for !fitsOneLine(state) && len(state.Agents) > 0 {
 		state.Agents = state.Agents[:len(state.Agents)-1] // the least active go first
 		state.More++
@@ -104,6 +111,7 @@ func entryFor(card agent.Card, now time.Time) AgentEntry {
 		Name:   truncateUTF8(card.Name, MaxNameBytes),
 		Status: string(card.Status),
 		Age:    int64(card.Age(now) / time.Second),
+		Title:  card.Title,
 	}
 	if card.Context != nil {
 		entry.Ctx = &Context{Used: card.Context.Used}

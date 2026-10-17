@@ -18,6 +18,7 @@
     <Rectangle id="bg" />
     <Label id="name" font="font:LargeBoldSystemFont" wrap="true" maxLines="2" translation="[28,26]" />
     <Label id="status" font="font:MediumSystemFont" />
+    <Label id="folder" font="font:SmallSystemFont" horizAlign="right" vertAlign="center" />
     <Rectangle id="ctxTrack" color="0x00000055" />
     <Rectangle id="ctxFill" color="0xFFFFFFAA" />
   </children>

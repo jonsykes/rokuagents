@@ -355,3 +355,93 @@ func writeFile(t *testing.T, path, content string) {
 		t.Fatal(err)
 	}
 }
+
+func TestTitles(t *testing.T) {
+	tests := []struct {
+		name    string
+		entries []map[string]any
+		want    string
+	}{
+		{"none", []map[string]any{{"type": "user"}}, ""},
+		{"generated", []map[string]any{{"type": "ai-title", "aiTitle": "Fix the build"}}, "Fix the build"},
+		{"latest generated", []map[string]any{
+			{"type": "ai-title", "aiTitle": "First"}, {"type": "ai-title", "aiTitle": "Second"},
+		}, "Second"},
+		{"custom wins over a later generated one", []map[string]any{
+			{"type": "custom-title", "customTitle": "Payments refactor"}, {"type": "ai-title", "aiTitle": "Generated"},
+		}, "Payments refactor"},
+		{"cleared custom falls back", []map[string]any{
+			{"type": "ai-title", "aiTitle": "Generated"},
+			{"type": "custom-title", "customTitle": "Mine"}, {"type": "custom-title", "customTitle": ""},
+		}, "Generated"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f := newFixture(t)
+			f.source.Titles = true
+			f.addSession(7, nil)
+			f.addTranscript("session-7", tt.entries...)
+			sessions := f.sessions()
+			if len(sessions) != 1 || sessions[0].Title != tt.want {
+				t.Fatalf("sessions = %+v, want title %q", sessions, tt.want)
+			}
+		})
+	}
+}
+
+func TestTitlesOffByDefault(t *testing.T) {
+	f := newFixture(t)
+	f.addSession(7, nil)
+	f.addTranscript("session-7", map[string]any{"type": "custom-title", "customTitle": "Payments refactor"})
+	if sessions := f.sessions(); len(sessions) != 1 || sessions[0].Title != "" {
+		t.Fatalf("sessions = %+v, want no title unless asked", sessions)
+	}
+}
+
+func TestTitleFollowsAppendsAndPartialLines(t *testing.T) {
+	f := newFixture(t)
+	f.source.Titles = true
+	f.addSession(7, nil)
+	f.addTranscript("session-7", map[string]any{"type": "ai-title", "aiTitle": "Old"})
+	if got := f.sessions()[0].Title; got != "Old" {
+		t.Fatalf("title = %q, want Old", got)
+	}
+	path := filepath.Join(f.source.ProjectsDir, "-work-project", "session-7.jsonl")
+	file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer file.Close()
+	if _, err := file.WriteString(`{"type":"custom-title","customTitle":"New"`); err != nil {
+		t.Fatal(err)
+	}
+	if got := f.sessions()[0].Title; got != "Old" {
+		t.Fatalf("title = %q while the line is partial, want Old", got)
+	}
+	if _, err := file.WriteString("}\n"); err != nil {
+		t.Fatal(err)
+	}
+	if got := f.sessions()[0].Title; got != "New" {
+		t.Fatalf("title = %q once the line is complete, want New", got)
+	}
+}
+
+func TestTitlesCarryNoOtherContent(t *testing.T) {
+	const canary = "CANARY-7f3a"
+	f := newFixture(t)
+	f.source.Titles = true
+	f.addSession(9, map[string]any{"sessionId": "private", "statusUpdatedAt": now.UnixMilli()})
+	f.addTranscript("private",
+		map[string]any{"type": "user", "message": map[string]any{"role": "user", "content": canary + `-title"`}},
+		map[string]any{"type": "last-prompt", "lastPrompt": canary},
+		map[string]any{"type": "ai-title", "aiTitle": "Safe title"},
+	)
+	sessions := f.sessions()
+	frame, err := protocol.Encode(protocol.NewState(agent.Arrange(sessions), now))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if bytes.Contains(frame, []byte(canary)) || !bytes.Contains(frame, []byte("Safe title")) {
+		t.Errorf("frame = %s, want the title and nothing else from the conversation", frame)
+	}
+}

@@ -23,6 +23,8 @@ func serveCommand(ctx context.Context, inv *invocation) error {
 		"address to listen on; YOUR_LAN_IP:8787 keeps it off other interfaces")
 	logLevel := flags.String("log-level", "info", "debug, info, warn or error")
 	claudeWindow := claudeContextFlag(flags)
+	titles := flags.Bool("titles", true,
+		"send each session's title (as the Claude app shows it) along with its folder name")
 	if err := inv.parse(flags); err != nil {
 		return err
 	}
@@ -42,6 +44,7 @@ func serveCommand(ctx context.Context, inv *invocation) error {
 
 	claudeSource := claude.NewSource(home, process.System{})
 	claudeSource.ContextWindow = *claudeWindow
+	claudeSource.Titles = *titles
 	server := httpserve.New(token)
 
 	listener, err := net.Listen("tcp", *addr)

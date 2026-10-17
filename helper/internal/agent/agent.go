@@ -50,6 +50,9 @@ type Session struct {
 	Since     time.Time // when Status last changed
 	StartedAt time.Time // orders cards: oldest session first
 	Context   *ContextUsage
+	// Title is the session's title as the agent shows it, when the detector
+	// was asked to read titles. Empty otherwise.
+	Title string
 }
 
 // Age is how long the session has been in its current status.

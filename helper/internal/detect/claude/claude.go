@@ -53,6 +53,12 @@ type Source struct {
 	Processes   StartTimes
 	// ContextWindow forces the context limit in tokens; 0 infers it.
 	ContextWindow int
+	// Titles makes sessions carry their title (see title.go). Titles are
+	// derived from the conversation, so only network displays the user set up
+	// turn this on; the USB display never gets them.
+	Titles bool
+
+	titles titleReader
 }
 
 // NewSource returns a Source for the Claude Code installation of the user
@@ -89,6 +95,9 @@ func (s *Source) Sessions(ctx context.Context, now time.Time) ([]agent.Session, 
 			continue
 		}
 		sessions = append(sessions, s.toSession(record, now))
+	}
+	if s.Titles {
+		s.titles.sweep()
 	}
 	return sessions, nil
 }
@@ -177,6 +186,9 @@ func (s *Source) toSession(r record, now time.Time) agent.Session {
 		session.Context = &agent.ContextUsage{Used: summary.context.Used, Limit: s.contextLimit(summary.context.Used)}
 	}
 	session.Status = r.status(err == nil && summary.endsInError, now)
+	if s.Titles {
+		session.Title = s.title(r.SessionID)
+	}
 	return session
 }
 
@@ -217,15 +229,36 @@ func (s *Source) contextLimit(used int) int {
 }
 
 func (s *Source) readTranscript(sessionID string) (transcriptSummary, error) {
-	if sessionID == "" || strings.ContainsAny(sessionID, `/\`) {
-		return transcriptSummary{}, fs.ErrNotExist
-	}
-	matches, err := filepath.Glob(filepath.Join(s.ProjectsDir, "*", sessionID+".jsonl"))
+	path, err := s.transcriptPath(sessionID)
 	if err != nil {
 		return transcriptSummary{}, err
 	}
-	if len(matches) == 0 {
-		return transcriptSummary{}, fs.ErrNotExist
+	return summarizeTranscript(path)
+}
+
+// title is the session's title, or "" when it has none or it cannot be read.
+func (s *Source) title(sessionID string) string {
+	path, err := s.transcriptPath(sessionID)
+	if err != nil {
+		return ""
 	}
-	return summarizeTranscript(matches[0])
+	title, err := s.titles.read(path)
+	if err != nil {
+		return ""
+	}
+	return title
+}
+
+func (s *Source) transcriptPath(sessionID string) (string, error) {
+	if sessionID == "" || strings.ContainsAny(sessionID, `/\`) {
+		return "", fs.ErrNotExist
+	}
+	matches, err := filepath.Glob(filepath.Join(s.ProjectsDir, "*", sessionID+".jsonl"))
+	if err != nil {
+		return "", err
+	}
+	if len(matches) == 0 {
+		return "", fs.ErrNotExist
+	}
+	return matches[0], nil
 }

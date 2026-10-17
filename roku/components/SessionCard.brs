@@ -2,6 +2,7 @@ sub init()
     m.bg = m.top.findNode("bg")
     m.name = m.top.findNode("name")
     m.status = m.top.findNode("status")
+    m.folder = m.top.findNode("folder")
     m.ctxTrack = m.top.findNode("ctxTrack")
     m.ctxFill = m.top.findNode("ctxFill")
     layout()
@@ -15,6 +16,10 @@ sub layout()
     m.name.width = w - 56
     m.status.width = w - 56
     m.status.translation = [28, h - 76]
+    ' The folder shares the status row, right-aligned, when a title is shown.
+    m.folder.width = w - 56 - 220
+    m.folder.height = 40
+    m.folder.translation = [28 + 220, h - 72]
     m.ctxTrack.width = w
     m.ctxTrack.height = 12
     m.ctxTrack.translation = [0, h - 12]
@@ -31,10 +36,25 @@ sub render()
     m.bg.color = style.bg
     m.name.color = style.fg
     m.status.color = style.fg
+    m.folder.color = style.fg
 
+    ' With a title, it is the headline and the folder name moves down beside
+    ' the status. Without one, the folder name is the headline as before.
     name = a.name
     if name = invalid then name = ""
-    m.name.text = name
+    title = a.title
+    if title = invalid then title = ""
+    if title <> ""
+        m.name.font = "font:MediumBoldSystemFont"
+        m.name.maxLines = 3
+        m.name.text = title
+        m.folder.text = name
+    else
+        m.name.font = "font:LargeBoldSystemFont"
+        m.name.maxLines = 2
+        m.name.text = name
+        m.folder.text = ""
+    end if
 
     age = m.top.elapsed
     if a.age <> invalid then age = age + a.age

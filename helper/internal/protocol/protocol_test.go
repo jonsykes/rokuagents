@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -221,5 +222,27 @@ func TestParseDeviceHello(t *testing.T) {
 		if _, ok := ParseDeviceHello([]byte(other)); ok {
 			t.Errorf("accepted %q", other)
 		}
+	}
+}
+
+func TestTitlesGoBeforeCards(t *testing.T) {
+	var cards []agent.Card
+	for i := range MaxAgents {
+		cards = append(cards, agent.Card{
+			Session: agent.Session{ID: fmt.Sprintf("claude:%d", i), Kind: agent.KindClaude, Status: agent.StatusIdle,
+				Since: now, Title: strings.Repeat("t", 150)},
+			Name: fmt.Sprintf("project-%d", i),
+		})
+	}
+	state := NewState(cards, now)
+	if len(state.Agents) != MaxAgents || state.More != 0 {
+		t.Fatalf("%d agents, %d more: titles must be dropped before any card", len(state.Agents), state.More)
+	}
+	if state.Agents[0].Title == "" || state.Agents[MaxAgents-1].Title != "" {
+		t.Errorf("first title %q, last %q: the least active lose theirs first",
+			state.Agents[0].Title, state.Agents[MaxAgents-1].Title)
+	}
+	if !fitsOneLine(state) {
+		t.Error("frame does not fit one line")
 	}
 }
