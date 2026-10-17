@@ -9,8 +9,10 @@ A display that can render a serial frame can render this.
 
 ## What the helper promises
 
-- It serves only status metadata: folder names, session titles, statuses, ages and context usage. No paths, prompts
-  or messages. Titles are the ones the Claude app shows; `--titles=false` leaves them out.
+- It serves status metadata: folder names, session titles, activity lines, statuses, ages and context usage. No
+  paths, prompts or tool output. Titles are the ones the Claude app shows; `--titles=false` leaves them out. An
+  activity line (`activity`, at most 100 bytes) says what a working session is doing or what a waiting one needs;
+  `--activity=false` leaves it out. A display without room for these fields can ignore them.
 - It answers within milliseconds; detection runs in the background every second, never inside a request.
 - The frame it serves is at most about 2 seconds old while the helper is healthy.
 - It never writes anything on behalf of a client. Every route is read-only.

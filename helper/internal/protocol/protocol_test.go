@@ -246,3 +246,25 @@ func TestTitlesGoBeforeCards(t *testing.T) {
 		t.Error("frame does not fit one line")
 	}
 }
+
+func TestActivityGoesBeforeTitles(t *testing.T) {
+	var cards []agent.Card
+	for i := range MaxAgents {
+		cards = append(cards, agent.Card{
+			Session: agent.Session{ID: fmt.Sprintf("claude:%d", i), Kind: agent.KindClaude, Status: agent.StatusIdle,
+				Since: now, Title: strings.Repeat("t", 60), Activity: strings.Repeat("a", 90)},
+			Name: fmt.Sprintf("project-%d", i),
+		})
+	}
+	state := NewState(cards, now)
+	if len(state.Agents) != MaxAgents {
+		t.Fatalf("%d agents: activity and titles must be dropped before any card", len(state.Agents))
+	}
+	last := state.Agents[MaxAgents-1]
+	if last.Activity != "" {
+		t.Errorf("the least active card kept its activity")
+	}
+	if state.Agents[0].Title == "" {
+		t.Errorf("the first card lost its title while activity lines could still go")
+	}
+}

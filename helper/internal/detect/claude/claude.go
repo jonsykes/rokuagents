@@ -57,6 +57,10 @@ type Source struct {
 	// derived from the conversation, so only network displays the user set up
 	// turn this on; the USB display never gets them.
 	Titles bool
+	// Activity makes sessions carry a few words on what they are doing or need
+	// (see activity.go). Like titles, it comes from the conversation, so only
+	// network displays turn it on.
+	Activity bool
 
 	titles titleReader
 }
@@ -188,6 +192,10 @@ func (s *Source) toSession(r record, now time.Time) agent.Session {
 	session.Status = r.status(err == nil && summary.endsInError, now)
 	if s.Titles {
 		session.Title = s.title(r.SessionID)
+	}
+	if s.Activity && err == nil {
+		approval := r.Status == "waiting" || r.isWaitingForUser()
+		session.Activity = activity(summary.tail, session.Status, approval)
 	}
 	return session
 }

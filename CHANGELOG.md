@@ -7,6 +7,9 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Activity lines (rokuagents).** `serve` sends a few words per Claude session (`activity`): the task-list step or
+  command it is on while it works, or the question it asked or the action awaiting approval while it waits. The Roku
+  card shows it under its title, now one line. `serve --activity=false` and the menu app's Settings turn it off.
 - **LAN discovery for the Roku channel (rokuagents).** When polls fail, the channel broadcasts a request on the
   serve port over UDP and `serve` answers with its current address, so the TV follows the computer to a new address
   without a reinstall. Requests name the token by a hash and replies are signed with it, so the server only answers

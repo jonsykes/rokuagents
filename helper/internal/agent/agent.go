@@ -53,6 +53,9 @@ type Session struct {
 	// Title is the session's title as the agent shows it, when the detector
 	// was asked to read titles. Empty otherwise.
 	Title string
+	// Activity is a few words on what the session is doing, or what it needs
+	// while it waits, when the detector was asked for it. Empty otherwise.
+	Activity string
 }
 
 // Age is how long the session has been in its current status.
