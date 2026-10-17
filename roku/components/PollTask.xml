@@ -2,12 +2,16 @@
 <!--
   Polls GET {url}/state as described in docs/http-api.md. Publishes every valid
   frame on "frame" and a human-readable reason on "failure" when a poll fails
-  ("" after a success). Never stops on its own.
+  ("" after a success). Never stops on its own. When polls keep failing it
+  looks for the helper on the LAN (docs/http-api.md#discovery), polls the
+  address it finds, and remembers it in the registry. "serverUrl" is the
+  address being polled.
 -->
 <component name="PollTask" extends="Task">
   <interface>
     <field id="url" type="string" />
     <field id="token" type="string" />
+    <field id="serverUrl" type="string" />
     <field id="intervalMs" type="integer" value="1000" />
     <field id="frame" type="assocarray" />
     <field id="failure" type="string" />
