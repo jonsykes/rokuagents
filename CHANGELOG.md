@@ -33,17 +33,19 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- **The Roku channel signals `AppLaunchComplete` (rokuagents)** once its first screen is up, as Roku requires of
+  every channel.
 - **Enclosure: the fit-test coupon is gone.** The printed case fits the board, so the coupon (`managents-fit_test.stl`,
   the `fit_test` part and its Makefile entry) is removed; the body and bezel are unchanged.
 - **A short README, the rest in `docs/`.** The front page is one photo of the real display, what you need and three steps to get
   started, including how to tell your AI to do it. New pages: a build guide (what to buy, how to search for it, how to
   print and assemble the stand), install and flash, using the display and privacy.
 
-### Fixed
+### Known issues
 
-- **Roku screensaver going blank (rokuagents).** The channel now tells the Roku when its first screen is up
-  (`AppLaunchComplete`). Without it, a screensaver started through the Roku's InstantOn path could stay "pended
-  without render" and show only the heading.
+- **The Roku screensaver sometimes shows only its heading (rokuagents).** The cause is not known: the screensaver
+  starts, polls and logs no error, but its screen is not drawn. Pick another screensaver until this is solved; the
+  channel itself is not affected.
 
 ## [0.2.0] - 2026-10-14
 

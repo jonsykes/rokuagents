@@ -46,8 +46,8 @@ sub init()
 end sub
 
 ' Tells the Roku the first screen is up. Roku expects every channel to send
-' this; without it a screensaver launched by "InstantOn" can stay pended,
-' never shown, which is how the screensaver went blank.
+' this (it is a certification requirement). It did not cure the screensaver
+' sometimes staying blank, which is still unexplained.
 sub signalLaunched()
     m.top.signalBeacon("AppLaunchComplete")
 end sub
