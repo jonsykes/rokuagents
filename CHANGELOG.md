@@ -39,6 +39,12 @@ and the project uses [Semantic Versioning](https://semver.org/).
   started, including how to tell your AI to do it. New pages: a build guide (what to buy, how to search for it, how to
   print and assemble the stand), install and flash, using the display and privacy.
 
+### Fixed
+
+- **Roku screensaver going blank (rokuagents).** The channel now tells the Roku when its first screen is up
+  (`AppLaunchComplete`). Without it, a screensaver started through the Roku's InstantOn path could stay "pended
+  without render" and show only the heading.
+
 ## [0.2.0] - 2026-10-14
 
 The first release: from a prototype you build from source to something you install and plug in.
