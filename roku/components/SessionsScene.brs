@@ -28,6 +28,7 @@ sub init()
     config = loadConfig()
     if config = invalid
         showMessage("config.json is missing or has no url. Rebuild the channel with build.sh.")
+        signalLaunched()
         return
     end if
 
@@ -41,6 +42,14 @@ sub init()
     m.tick = startTimer(1.0, "onTick")
     m.blink = startTimer(0.5, "onBlink")
     showMessage("Connecting to your computer...")
+    signalLaunched()
+end sub
+
+' Tells the Roku the first screen is up. Roku expects every channel to send
+' this; without it a screensaver launched by "InstantOn" can stay pended,
+' never shown, which is how the screensaver went blank.
+sub signalLaunched()
+    m.top.signalBeacon("AppLaunchComplete")
 end sub
 
 function loadConfig() as Dynamic
